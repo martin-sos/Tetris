@@ -22,7 +22,7 @@ private:
 	std::vector<std::vector<Field>> game_field;		// the lower left corener of the game field is defined as the entry at row 0, column 0
 	int score;								// point score of the current game
 	bool active;							// is a game active?
-    bool paused;
+	bool paused;
 	int level;								// level := linecounter / 10, determines how fast minos are falling
 	int lineCounter;						// counts how many lines has been destroyed
 	Tetromino currentTetromino;

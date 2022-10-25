@@ -192,7 +192,6 @@ void Tetris::destroyLine()
                         game_field[k][j] = { TetrominoKind::none, false };
                     }
                 }
-
             }
             i--; // row i is now a new row and needs to be checked again
         }
@@ -203,7 +202,6 @@ void Tetris::destroyLine()
     {
         if (lineCounter % level_up == 0)
             level++; // level-up after clearing another 25 lines
-
     }
 }
 
@@ -274,8 +272,8 @@ void Tetris::start()
     if (!active)
     {
         active = true;
-		paused = false;
-	    level = 1;
+        paused = false;
+        level = 1;
         score = 0;
         lineCounter = 0;
         
