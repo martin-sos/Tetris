@@ -124,7 +124,6 @@ bool Tetris::shift(MoveTetromino direction)
         int row = location[i].first;
         int col = location[i].second;
 
-
         if (row + y < 0 || row + y >= field_height ||
             col + x < 0 || col + x >= field_width ||
             game_field[row + y][col + x].occupied == true)
@@ -151,7 +150,6 @@ bool Tetris::shift(MoveTetromino direction)
         {
             int row = location[i].first;
             int col = location[i].second;
-
             game_field[row][col].occupied = true;
         }
     }
@@ -169,7 +167,6 @@ void Tetris::destroyLine()
         bool row_occupied = true;
         for (int j = 0; j < field_width && row_occupied; j++)
             row_occupied &= game_field[i][j].occupied;
-
 
         if (row_occupied)
         {
@@ -195,7 +192,6 @@ void Tetris::destroyLine()
             }
             i--; // row i is now a new row and needs to be checked again
         }
-
     }
 
     if (destroy)
@@ -263,7 +259,6 @@ void Tetris::run()
         }
         
         boost::this_thread::sleep_for(boost::chrono::milliseconds(400));
-        
     }
 }
 
