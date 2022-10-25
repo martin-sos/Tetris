@@ -170,9 +170,13 @@ void Tetris::destroyLine()
         for (int j = 0; j < field_width && row_occupied; j++)
             row_occupied &= game_field[i][j].occupied;
 
-       
+
         if (row_occupied)
         {
+            destroy = true;
+            lineCounter++;
+            score += 10;
+
             // destroy full row
             for (int j = 0; j < field_width; j++)
                 game_field[i][j] = { TetrominoKind::none, false };
@@ -188,14 +192,20 @@ void Tetris::destroyLine()
                         game_field[k][j] = { TetrominoKind::none, false };
                     }
                 }
-               
+
             }
             i--; // row i is now a new row and needs to be checked again
         }
 
     }
-}
 
+    if (destroy)
+    {
+        if (lineCounter % level_up == 0)
+            level++; // level-up after clearing another 25 lines
+
+    }
+}
 
 
 void Tetris::detectKeyboardInput()
@@ -264,6 +274,10 @@ void Tetris::start()
     if (!active)
     {
         active = true;
+		paused = false;
+	    level = 1;
+        score = 0;
+        lineCounter = 0;
         
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));

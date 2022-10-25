@@ -8,6 +8,7 @@
 /*enum class to differentiate the different minos of Tetris */
 static constexpr const int field_width = 10;
 static constexpr const int field_height = 20;
+static constexpr const int level_up = 10;
 
 struct Field {
 	TetrominoKind mino;
@@ -21,6 +22,7 @@ private:
 	std::vector<std::vector<Field>> game_field;		// the lower left corener of the game field is defined as the entry at row 0, column 0
 	int score;								// point score of the current game
 	bool active;							// is a game active?
+    bool paused;
 	int level;								// level := linecounter / 10, determines how fast minos are falling
 	int lineCounter;						// counts how many lines has been destroyed
 	Tetromino currentTetromino;
@@ -51,6 +53,7 @@ public:
 		std::srand(static_cast<unsigned>(std::time(nullptr)));
 		score = 0;
 		active = false;
+		paused = false;
 		level = 0;
 		lineCounter = 0;
 		currentTetromino = nextTetromino = Tetromino();
