@@ -17,9 +17,8 @@ struct Field {
 
 class Tetris {
 private:		
-	static TetrominoKind getRandomTetromino() { return static_cast<TetrominoKind>((std::rand() % 7) + 1); }	// randomly selects a mino
 
-	std::vector<std::vector<Field>> game_field;		// the lower left corener of the game field is defined as the entry at row 0, column 0
+	std::vector<std::vector<Field>> game_field;		// the lower left corner of the game field is defined as the entry at row 0, column 0
 	int score;								// point score of the current game
 	bool isActive;							// is a game active?
 	bool isPaused;
@@ -41,8 +40,6 @@ private:
 	void placeCurrentTetromino();
 	void draw();							// draws the field
 	
-
-
 public:
 	Tetris() {
 		game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width));
