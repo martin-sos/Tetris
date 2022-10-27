@@ -21,8 +21,8 @@ private:
 
 	std::vector<std::vector<Field>> game_field;		// the lower left corener of the game field is defined as the entry at row 0, column 0
 	int score;								// point score of the current game
-	bool active;							// is a game active?
-	bool paused;
+	bool isActive;							// is a game active?
+	bool isPaused;
 	int level;								// level := linecounter / 10, determines how fast minos are falling
 	int lineCounter;						// counts how many lines has been destroyed
 	Tetromino currentTetromino;
@@ -52,8 +52,8 @@ public:
 
 		std::srand(static_cast<unsigned>(std::time(nullptr)));
 		score = 0;
-		active = false;
-		paused = false;
+		isActive = false;
+		isPaused = false;
 		level = 0;
 		lineCounter = 0;
 		currentTetromino = nextTetromino = Tetromino();

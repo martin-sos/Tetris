@@ -16,7 +16,7 @@ void Tetromino::shiftTetromino(MoveTetromino direction)
         case MoveTetromino::Left:  x = -1; break;
         case MoveTetromino::Right: x =  1; break;
         case MoveTetromino::Down:  y = -1; break;
-    default: std::cout << "ERROR: this is not a valid direction: " << static_cast<int>(direction) << std::endl; break;
+    default: std::cout << "ERROR: this is not a valid direction: " << static_cast<int>(direction) << std::endl; return;
     }
 
     location[0].first += y;  location[1].first += y;  location[2].first += y;  location[3].first += y;
@@ -100,7 +100,6 @@ void Tetromino::rotateI(RotateTetromino direction)
     }
 }
 
-
 void Tetromino::rotateJ(RotateTetromino direction) 
 {
     if (direction == RotateTetromino::Clockwise)
@@ -162,7 +161,6 @@ void Tetromino::rotateJ(RotateTetromino direction)
         }
     }
 }
-
 
 void Tetromino::rotateL(RotateTetromino direction) 
 {
@@ -226,7 +224,6 @@ void Tetromino::rotateL(RotateTetromino direction)
     }
 
 }
-
 
 void Tetromino::rotateO(RotateTetromino direction) 
 {
@@ -420,8 +417,6 @@ void Tetromino::rotateZ(RotateTetromino direction)
     }
 
 }
-
-
 
 void Tetromino::setInitiallocation(TetrominoKind kind)
 {

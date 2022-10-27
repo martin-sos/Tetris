@@ -44,13 +44,13 @@ void Tetris::placeCurrentTetromino()
     {
         // detect game over
         if (game_field[location[i].first][location[i].second].occupied)
-            active = false;
+            isActive = false;
         
         // place the next stone anyway
         game_field[location[i].first][location[i].second] = { kind, false };
     }
 
-    if (!active)
+    if (!isActive)
     { // on game over: draw the game field a very last time
         draw();
     }
@@ -206,7 +206,7 @@ void Tetris::detectKeyboardInput()
 {
     std::cout << "Tetris::detectKeyboardInput() runs..." << std::endl;
     
-    while (active)
+    while (isActive)
     {
         if ((GetAsyncKeyState(VK_LEFT) & 0x01))
         {
@@ -247,7 +247,7 @@ void Tetris::detectKeyboardInput()
 void Tetris::run()
 {
     std::cout << "Tetris::run() runs..." << std::endl;
-    while (active)
+    while (isActive)
     { // each eexecution of this loop let's a mino fall another row
 
         draw();
@@ -264,10 +264,10 @@ void Tetris::run()
 
 void Tetris::start()
 {
-    if (!active)
+    if (!isActive)
     {
-        active = true;
-        paused = false;
+        isActive = true;
+        isPaused = false;
         level = 1;
         score = 0;
         lineCounter = 0;
@@ -279,7 +279,7 @@ void Tetris::start()
         game_thread.join();
         input_thread.join();
 
-        active = false;
+        isActive = false;
     }
 }
 
