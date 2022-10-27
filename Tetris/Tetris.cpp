@@ -70,25 +70,36 @@ void Tetris::draw()
     std::cout << endLine;
 }
 
-void Tetris::rotate(RotateTetromino direction)
+void Tetris::rotate(const RotateTetromino direction)
 {
     Tetromino testTetromino = currentTetromino; // test a rotation on a copy, only if successfull, execute it
 
-    /* does it hit the walls, which actually means, is it out of bounds? */
+
     bool validRotation = true;
     testTetromino.rotateTetromino(direction);
-    std::pair<int, int>* location = testTetromino.getLocation();
+    const std::pair<int, int>* location = testTetromino.getLocation();
     for (int i = 0; i < maxMinos; i++)
     {
+        /* does it hit the walls, which actually means, is it out of bounds? */
         if (location[i].first < 0 || location[i].first >= field_height ||
             location[i].second < 0 || location[i].second >= field_width)
+        {
             validRotation = false;
+            break;
+        }
+
+        /* does it rotate into another mino? */
+        if(game_field[location[i].first][location[i].second].occupied)
+        {
+            validRotation = false;
+            break;
+        }
     }
 
     if (validRotation)
     {
         location = currentTetromino.getLocation();
-       
+
         /* remove from game field */
         for (auto i = maxMinos - 1; i >= 0; i--)
             game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
@@ -103,7 +114,7 @@ bool Tetris::fall()
     return shift(MoveTetromino::Down);    
 }
 
-bool Tetris::shift(MoveTetromino direction)
+bool Tetris::tryShift(const MoveTetromino direction, Tetromino t)
 {
     int x = 0, y = 0;
     switch (direction)
@@ -114,12 +125,12 @@ bool Tetris::shift(MoveTetromino direction)
     }
 
     /* 1. locate the falling Tetromino */
-    std::pair<int, int>* location = currentTetromino.getLocation();
+    std::pair<int, int>* location = t.getLocation();
 
     /* 2. check if it can move by (x,y) */
     bool canMove = true;
     for (auto i = maxMinos - 1; i >= 0; i--)
-    { // it is important that we go bottom to top here 
+    { // it is important that we go bottom to top here
 
         int row = location[i].first;
         int col = location[i].second;
@@ -133,17 +144,27 @@ bool Tetris::shift(MoveTetromino direction)
         }
     }
 
-    /* 3. if it can move, move it */
+    return canMove;
+}
+
+bool Tetris::shift(const MoveTetromino direction)
+{
+    /* 1. check if move is possible */
+    bool canMove = tryShift(direction, currentTetromino);
+
+    std::pair<int, int>* location = currentTetromino.getLocation();
+
+    /* 2. if it can move, move it */
     if (canMove)
     {
         for (auto i = maxMinos - 1; i >= 0; i--)
             game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
-        
+
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
     }
 
-    /* if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
+    /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
     if (canMove == FALSE && direction == MoveTetromino::Down)
     {
         for (auto i = maxMinos - 1; i >= 0; i--)
@@ -153,7 +174,7 @@ bool Tetris::shift(MoveTetromino direction)
             game_field[row][col].occupied = true;
         }
     }
-   
+
     return canMove;
 }
 
@@ -260,6 +281,15 @@ void Tetris::run()
         
         boost::this_thread::sleep_for(boost::chrono::milliseconds(400));
     }
+}
+
+void Tetris::clearBoard(void)
+{
+    Field init = { TetrominoKind::none, false };
+
+    for(int i = 0; i < field_height; i++)
+        for(int j = 0; j < field_width; j++)
+            game_field[i][j] = init;
 }
 
 void Tetris::start()
