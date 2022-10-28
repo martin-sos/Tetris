@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Tetromino.h"
+#include "Tetris_Statistics.h"
 
 
 /*enum class to differentiate the different minos of Tetris */
@@ -24,12 +25,14 @@ private:
     bool isPaused;                          // is a game paused?
     bool ghosting;                          // is ghosting actived?
 
+	std::string player_name;				
     int score;                              // point score of the current game
-    int level;                              // level := linecounter / 10, determines how fast minos are falling
-    int lineCounter;                        // counts how many lines has been destroyed
+    int level;                              // level := lines / 10; determines how fast minos are falling
+    int lines;								// counts how many lines has been destroyed
+	Tetris_Statistics* stats;
 	
-	Tetromino currentTetromino;
 	Tetromino nextTetromino;				// the TetrominoKind which is added next to the game field
+	Tetromino currentTetromino;
 
 	
 	void run();								// executes the Tetris game loop; is exectued in a thread
@@ -48,12 +51,21 @@ private:
 	
 public:
     Tetris()
-          : score(0), isActive(false), isPaused(false), ghosting(false), level(1), lineCounter(0),
-          nextTetromino(Tetromino()),
-          game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width)))
+          :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
+		  isActive(false), isPaused(false), ghosting(false), 
+		  score(0), level(1), lines(0), stats(Tetris_Statistics::getInstance()),
+          nextTetromino(Tetromino()), currentTetromino(nextTetromino)
+          
     {
+		std::cout << "\n\nPlease enter a name: ";
+		std::cin >> player_name;
         clearBoard();
 		std::srand(static_cast<unsigned>(std::time(nullptr)));
+	}
+
+	~Tetris()
+	{
+		delete stats;
 	}
 
 	void start();				// starts a Tetris game, spawn all the needed threads, terminates as soon as game is over
