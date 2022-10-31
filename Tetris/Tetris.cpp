@@ -1,6 +1,5 @@
 // Tetris.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
 #include <iostream>
 #include <string>
 #include <boost/chrono.hpp>
@@ -35,6 +34,18 @@ void Tetris::placeNextTetromino()
     nextTetromino = Tetromino();
 }
 
+
+void Tetris::print_stats()
+{
+    std::vector<Tetris_Stats_entry> highscores = stats->get_high_scores();
+    std::cout << "\n\n\t H I G H S C O R E S \n\n";
+
+    for (auto row : highscores)
+    {
+        std::cout << row.name << "..." << row.lines << "..." << row.level << "..." << row.score << std::endl;
+    }
+}
+
 void Tetris::placeCurrentTetromino()
 {
     std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
@@ -51,8 +62,10 @@ void Tetris::placeCurrentTetromino()
     }
 
     if (!isActive)
-    { // on game over: draw the game field a very last time
+    {   // on game over: draw the game field a very last time, save the score and print all highscores
         draw();
+        stats->add_stats(entry);
+        print_stats();
     }
 }
 
@@ -192,8 +205,8 @@ void Tetris::destroyLine()
         if (row_occupied)
         {
             destroy = true;
-            lineCounter++;
-            score += 10;
+            entry.lines++;
+            entry.score += 10;
 
             // destroy full row
             for (int j = 0; j < field_width; j++)
@@ -217,8 +230,8 @@ void Tetris::destroyLine()
 
     if (destroy)
     {
-        if (lineCounter % level_up == 0)
-            level++; // level-up after clearing another 25 lines
+        if (entry.lines % level_up == 0)
+            entry.level++; // level-up after clearing another 25 lines
     }
 }
 
@@ -231,36 +244,34 @@ void Tetris::detectKeyboardInput()
     {
         if ((GetAsyncKeyState(VK_LEFT) & 0x01))
         {
-            //std::cout << "VK_LEFT" << std::endl;
             shift(MoveTetromino::Left);
-            
         }
 
         if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
         {
-            //std::cout << "VK_RIGTH" << std::endl;
             shift(MoveTetromino::Right);
-            
         }
 
         if ((GetAsyncKeyState(VK_DOWN) & 0x01))
         {
             rotate(RotateTetromino::CounterClockwise);
-            //std::cout << "VK_DOWN" << std::endl;
         }
 
         if ((GetAsyncKeyState(VK_UP) & 0x01))
         {
-            //std::cout << "VK_UP" << std::endl;
             rotate(RotateTetromino::Clockwise);
         }
 
         if ((GetAsyncKeyState(VK_SPACE) & 0x01))
         {
-            //std::cout << "VK_SPACE" << std::endl;
             while(fall());
             destroyLine();
             placeNextTetromino();
+        }
+
+        if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
+        {
+            isActive = false;
         }
     }
 }
@@ -298,9 +309,9 @@ void Tetris::start()
     {
         isActive = true;
         isPaused = false;
-        level = 1;
-        score = 0;
-        lineCounter = 0;
+        entry.level = 1;
+        entry.score = 0;
+        entry.lines = 0;
         
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));
@@ -312,24 +323,3 @@ void Tetris::start()
         isActive = false;
     }
 }
-
-
-
-int main()
-{
-    std::cout << "Hello World!\n";
-
-    Tetris T = Tetris();
-    T.start();
-}
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

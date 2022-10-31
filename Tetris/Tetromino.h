@@ -12,32 +12,32 @@ static constexpr const int maxMinos = 4;
 
 class Tetromino {
 private:
-	TetrominoKind kind;
-	TetrominoOrientation orientation;
-	std::pair<int, int> location[4];
+    TetrominoKind kind;
+    TetrominoOrientation orientation;
+    std::pair<int, int> location[4];
 
-	void setInitiallocation(TetrominoKind);
+    void setInitiallocation(TetrominoKind);
 
-	void rotateI(RotateTetromino direction);
-	void rotateJ(RotateTetromino direction);
-	void rotateL(RotateTetromino direction);
-	void rotateO(RotateTetromino direction);
-	void rotateS(RotateTetromino direction);
-	void rotateT(RotateTetromino direction);
-	void rotateZ(RotateTetromino direction);
+    void rotateI(RotateTetromino direction);
+    void rotateJ(RotateTetromino direction);
+    void rotateL(RotateTetromino direction);
+    void rotateO(RotateTetromino direction);
+    void rotateS(RotateTetromino direction);
+    void rotateT(RotateTetromino direction);
+    void rotateZ(RotateTetromino direction);
 
 public:
-	Tetromino() {
-		kind = static_cast<TetrominoKind>((std::rand() % 7) + 1); 
-		orientation = TetrominoOrientation::Zero;
-		setInitiallocation(kind);
-	}
-	
-	void shiftTetromino(MoveTetromino direction);
-	void rotateTetromino(RotateTetromino direction);
+    Tetromino() {
+        kind = static_cast<TetrominoKind>((std::rand() % 7) + 1); 
+        orientation = TetrominoOrientation::Zero;
+        setInitiallocation(kind);
+    }
+    
+    void shiftTetromino(MoveTetromino direction);
+    void rotateTetromino(RotateTetromino direction);
 
-	std::pair<int, int>* getLocation(void);
-	TetrominoKind getKind() { return kind; }
+    std::pair<int, int>* getLocation(void);
+    TetrominoKind getKind() { return kind; }
 };
 
 #endif // _TETROMINO_H_
