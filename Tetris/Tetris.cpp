@@ -62,7 +62,7 @@ void Tetris::placeCurrentTetromino()
     }
 
     if (!isActive)
-    { // on game over: draw the game field a very last time
+    {   // on game over: draw the game field a very last time, save the score and print all highscores
         draw();
         stats->add_stats(entry);
         print_stats();
