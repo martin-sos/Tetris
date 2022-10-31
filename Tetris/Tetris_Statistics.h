@@ -48,7 +48,7 @@ private:
 
 public:
    
-    static Tetris_Statistics* getInstance()
+    static Tetris_Statistics* get_instance()
     {
         if (!singleton)
             singleton = new Tetris_Statistics();
@@ -67,7 +67,7 @@ public:
     }
 
     void add_stats(Tetris_Stats_entry);
-    std::vector<Tetris_Stats_entry> getHighscores(void);
+    std::vector<Tetris_Stats_entry> get_high_scores(void);
 };
 
 #endif // !_TETRIS_STATISTICS_H

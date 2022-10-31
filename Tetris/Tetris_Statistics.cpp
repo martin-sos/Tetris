@@ -47,7 +47,7 @@ void Tetris_Statistics::add_stats(Tetris_Stats_entry entry)
     return;
 }
 
-std::vector<Tetris_Stats_entry> Tetris_Statistics::getHighscores()
+std::vector<Tetris_Stats_entry> Tetris_Statistics::get_high_scores()
 {
     int rc, n = 10;
     std::string sql_stmt = "SELECT Name, Lines, Level, Score FROM game ORDER BY Score DESC";
@@ -61,10 +61,7 @@ std::vector<Tetris_Stats_entry> Tetris_Statistics::getHighscores()
         int i = 0;
         rc = sqlite3_step(stmt);
         while (i < n && rc == SQLITE_ROW)
-        {	// TODO: column indeces are magic numbers, refactoring needed
-            // TODO: copy function is overkill, understand why name.assign(temp) does not work
-            
-            
+        {   // TODO: column indeces are magic numbers, refactoring needed
             
             stats[i].name = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)));
             stats[i].lines = sqlite3_column_int(stmt, 1);

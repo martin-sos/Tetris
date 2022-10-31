@@ -52,7 +52,7 @@ public:
           :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
           isActive(false), isPaused(false), ghosting(false), 
           entry({"", 0, 1, 0}),
-          stats(Tetris_Statistics::getInstance()),
+          stats(Tetris_Statistics::get_instance()),
           nextTetromino(Tetromino()), currentTetromino(nextTetromino)
           
     {

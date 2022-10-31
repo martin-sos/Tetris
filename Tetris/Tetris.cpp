@@ -37,7 +37,7 @@ void Tetris::placeNextTetromino()
 
 void Tetris::print_stats()
 {
-    std::vector<Tetris_Stats_entry> highscores = stats->getHighscores();
+    std::vector<Tetris_Stats_entry> highscores = stats->get_high_scores();
     std::cout << "\n\n\t H I G H S C O R E S \n\n";
 
     for (auto row : highscores)
