@@ -22,17 +22,13 @@ private:
     void init();
     
     Tetris_Statistics()
-    {
-        // TODO: how to react on a failed open / creation? 
+    {   // TODO: how to react on a failed open / creation? 
 
-        int rc;
-
-        rc = sqlite3_open_v2("scores.db", &db, SQLITE_OPEN_READWRITE, NULL); // try open existing db
-
+        int rc = sqlite3_open_v2("scores.db", &db, SQLITE_OPEN_READWRITE, NULL); // try open existing db
         if (rc == SQLITE_CANTOPEN)
         {   // if open not successful, create it 
             rc = sqlite3_open_v2("scores.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-            init();
+            init(); 
         }
 
         if (rc == SQLITE_OK)

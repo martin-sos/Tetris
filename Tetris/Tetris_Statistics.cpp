@@ -5,11 +5,10 @@ Tetris_Statistics* Tetris_Statistics::singleton = nullptr;
 
 void Tetris_Statistics::init()
 {
-    int rc;
     std::string sql_stmt = "CREATE TABLE game(ID INTEGER UNIQUE, Name TEXT, Lines INTEGER, Level INTEGER, Score INTEGER)";
     sqlite3_stmt* stmt;
 
-    rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
+    int rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
     
     if(rc == SQLITE_OK)
         rc = sqlite3_step(stmt);
@@ -27,11 +26,10 @@ void Tetris_Statistics::init()
 
 void Tetris_Statistics::add_stats(Tetris_Stats_entry entry)
 {
-    int rc;
     std::string sql_stmt = "INSERT INTO game VALUES(random(),'" + entry.name + "'," + std::to_string(entry.lines) + "," + std::to_string(entry.level) + "," + std::to_string(entry.score) + ")";
     sqlite3_stmt* stmt;
 
-    rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
+    int rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
 
     if (rc == SQLITE_OK)
         rc = sqlite3_step(stmt);
@@ -49,12 +47,12 @@ void Tetris_Statistics::add_stats(Tetris_Stats_entry entry)
 
 std::vector<Tetris_Stats_entry> Tetris_Statistics::get_high_scores()
 {
-    int rc, n = 10;
+    int n = 10;
     std::string sql_stmt = "SELECT Name, Lines, Level, Score FROM game ORDER BY Score DESC";
     sqlite3_stmt* stmt;
     std::vector<Tetris_Stats_entry> stats = std::vector<Tetris_Stats_entry>(n);
 
-    rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
+    int rc = sqlite3_prepare_v2(db, sql_stmt.c_str(), static_cast<int>(sql_stmt.length()), &stmt, NULL);
 
     if(rc == SQLITE_OK)
     {
