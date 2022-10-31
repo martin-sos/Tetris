@@ -3,6 +3,15 @@
 
 #include <sqlite3.h>
 #include <iostream>
+#include <vector>
+
+struct Tetris_Stats_entry
+{
+    std::string name;
+    int lines;
+    int level;
+    int score;
+};
 
 class Tetris_Statistics
 {
@@ -14,7 +23,7 @@ private:
     
     Tetris_Statistics()
     {
-        // TODO: how to react on a failed open / vreation? 
+        // TODO: how to react on a failed open / creation? 
 
         int rc;
 
@@ -57,7 +66,8 @@ public:
             std::cout << "\nError: failed to close connection to database, error code: " << rc << std::endl;
     }
 
-    void add_stats(std::string name, int lines, int level, int score);
+    void add_stats(Tetris_Stats_entry);
+    std::vector<Tetris_Stats_entry> getHighscores(void);
 };
 
 #endif // !_TETRIS_STATISTICS_H

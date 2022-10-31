@@ -34,6 +34,18 @@ void Tetris::placeNextTetromino()
     nextTetromino = Tetromino();
 }
 
+
+void Tetris::print_stats()
+{
+    std::vector<Tetris_Stats_entry> highscores = stats->getHighscores();
+    std::cout << "\n\n\t H I G H S C O R E S \n\n";
+
+    for (auto row : highscores)
+    {
+        std::cout << row.name << "..." << row.lines << "..." << row.level << "..." << row.score << std::endl;
+    }
+}
+
 void Tetris::placeCurrentTetromino()
 {
     std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
@@ -52,7 +64,8 @@ void Tetris::placeCurrentTetromino()
     if (!isActive)
     { // on game over: draw the game field a very last time
         draw();
-        stats->add_stats(player_name, lines, level, score);
+        stats->add_stats(entry);
+        print_stats();
     }
 }
 
@@ -192,8 +205,8 @@ void Tetris::destroyLine()
         if (row_occupied)
         {
             destroy = true;
-            lines++;
-            score += 10;
+            entry.lines++;
+            entry.score += 10;
 
             // destroy full row
             for (int j = 0; j < field_width; j++)
@@ -217,8 +230,8 @@ void Tetris::destroyLine()
 
     if (destroy)
     {
-        if (lines % level_up == 0)
-            level++; // level-up after clearing another 25 lines
+        if (entry.lines % level_up == 0)
+            entry.level++; // level-up after clearing another 25 lines
     }
 }
 
@@ -258,7 +271,7 @@ void Tetris::detectKeyboardInput()
 
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
-            isActive;
+            isActive = false;
         }
     }
 }
@@ -296,9 +309,9 @@ void Tetris::start()
     {
         isActive = true;
         isPaused = false;
-        level = 1;
-        score = 0;
-        lines = 0;
+        entry.level = 1;
+        entry.score = 0;
+        entry.lines = 0;
         
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));

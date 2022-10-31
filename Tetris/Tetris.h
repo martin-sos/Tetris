@@ -25,10 +25,7 @@ private:
     bool isPaused;                          // is a game paused?
     bool ghosting;                          // is ghosting actived?
 
-	std::string player_name;				
-    int score;                              // point score of the current game
-    int level;                              // level := lines / 10; determines how fast minos are falling
-    int lines;								// counts how many lines has been destroyed
+	Tetris_Stats_entry entry;
 	Tetris_Statistics* stats;
 	
 	Tetromino nextTetromino;				// the TetrominoKind which is added next to the game field
@@ -43,22 +40,25 @@ private:
     bool tryShift(const MoveTetromino, Tetromino);  // ...
     void rotate(const RotateTetromino);				// rotate a TetrominoKind Left or Right
 	
-	void destroyLine();						// detects a full line, destroys it and will let everything above fall down one more line
-	void placeNextTetromino();				// sets nextTetromino at the top of the game field and creates a new Tetromino
-	void placeCurrentTetromino();
-	void draw();							// draws the field
+	void destroyLine(void);					// detects a full line, destroys it and will let everything above fall down one more line
+	void placeNextTetromino(void);			// sets nextTetromino at the top of the game field and creates a new Tetromino
+	void placeCurrentTetromino(void);
+	void draw(void);						// draws the field
+	void print_stats(void);
 	void clearBoard(void);
 	
 public:
     Tetris()
           :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
 		  isActive(false), isPaused(false), ghosting(false), 
-		  score(0), level(1), lines(0), stats(Tetris_Statistics::getInstance()),
+		  entry({"", 0, 1, 0}),
+		  stats(Tetris_Statistics::getInstance()),
           nextTetromino(Tetromino()), currentTetromino(nextTetromino)
           
     {
+
 		std::cout << "\n\nPlease enter a name: ";
-		std::cin >> player_name;
+		std::cin >> entry.name;
         clearBoard();
 		std::srand(static_cast<unsigned>(std::time(nullptr)));
 	}
