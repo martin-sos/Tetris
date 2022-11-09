@@ -14,6 +14,13 @@ public:
         :screen_buffer_handle(CreateConsoleScreenBuffer(GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL)),
         old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width)))
     {
+        coord_preview_label = { 1, 6 };
+        coord_preview_tetromino = { 3, 8 };
+        coord_game_field = { 10, 0 };
+        coord_stats_lines = { coord_game_field.X + field_width + 8, 6 };
+        coord_stats_level = { coord_stats_lines.X, coord_stats_lines.Y + 2 };
+        coord_stats_score = { coord_stats_lines.X, coord_stats_level.Y + 2 };
+
         SetConsoleMode(screen_buffer_handle, ENABLE_PROCESSED_OUTPUT);
         SetConsoleActiveScreenBuffer(screen_buffer_handle);
 
@@ -31,6 +38,14 @@ public:
 private:
     HANDLE screen_buffer_handle;
     std::vector<std::vector<Field>> old_game_field;     // store the last given game field, in the next call of draw(), redraw only updated data fields
+
+    COORD coord_preview_label;
+    COORD coord_preview_tetromino;
+    COORD coord_game_field;
+    COORD coord_stats_lines;
+    COORD coord_stats_level;
+    COORD coord_stats_score;
+
 
     char minoToChar(TetrominoKind mino)
     {
