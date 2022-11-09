@@ -5,6 +5,8 @@
 #include <Windows.h>
 #include <string>
 
+enum class COLOR { Black = 0, Blue = 1, Green = 2, Cyan = 11, Red = 4, Magenta = 13, Orange = 12, Yellow = 14, White = 15 };
+
 class Tetris_Draw_Windows_Console : public Tetris_Draw
 {
 public:
@@ -33,7 +35,9 @@ public:
                 if (f.mino != old_game_field[i][j].mino)
                 {
                     buffer[0] = minoToChar(f.mino);
+                    WORD color = minoToColor(f.mino);
                     con_coord.X = j + 1;
+                    SetConsoleTextAttribute(screen_buffer_handle, color);
                     SetConsoleCursorPosition(screen_buffer_handle, con_coord);
                     WriteConsoleA(screen_buffer_handle, buffer, 1, NULL, NULL);
                 }
@@ -41,6 +45,7 @@ public:
             con_coord.X = 0; con_coord.Y++;
         }
         old_game_field = game_field;
+        SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
     }
 
 
@@ -81,6 +86,22 @@ private:
         }
     }
 
+
+    WORD minoToColor(TetrominoKind mino)
+    {
+        switch (mino)
+        {
+        case TetrominoKind::I:      return (WORD) COLOR::Cyan;
+        case TetrominoKind::J:      return (WORD) COLOR::Blue;
+        case TetrominoKind::L:      return (WORD) COLOR::Orange;
+        case TetrominoKind::O:      return (WORD) COLOR::Yellow;
+        case TetrominoKind::S:      return (WORD) COLOR::Green;
+        case TetrominoKind::T:      return (WORD) COLOR::Magenta;
+        case TetrominoKind::Z:      return (WORD) COLOR::Red;
+        case TetrominoKind::none:   return (WORD) COLOR::Black;
+        default:                    return (WORD) COLOR::White;
+        }
+    }
 };
 
 #endif // !_TETRIS_DRAW_WINDOWS_CONSOLE_
