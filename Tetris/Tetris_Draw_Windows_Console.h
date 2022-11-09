@@ -19,12 +19,14 @@ public:
 
         CONSOLE_CURSOR_INFO cursor = { 1, FALSE };
         SetConsoleCursorInfo(screen_buffer_handle, &cursor);    // disable cursor
-        
+
         draw_frame();
     }
 
-    void draw(std::vector<std::vector<Field>> game_field) override final;
+    void draw(std::vector<std::vector<Field>>) override final;
     void draw_frame() override final;
+    void update_stats(Tetris_Stats_entry) override final;
+    void update_preview(TetrominoKind) override final;
 
 private:
     HANDLE screen_buffer_handle;
@@ -50,17 +52,18 @@ private:
     {
         switch (mino)
         {
-        case TetrominoKind::I:      return (WORD) COLOR::Cyan;
-        case TetrominoKind::J:      return (WORD) COLOR::Blue;
-        case TetrominoKind::L:      return (WORD) COLOR::Orange;
-        case TetrominoKind::O:      return (WORD) COLOR::Yellow;
-        case TetrominoKind::S:      return (WORD) COLOR::Green;
-        case TetrominoKind::T:      return (WORD) COLOR::Magenta;
-        case TetrominoKind::Z:      return (WORD) COLOR::Red;
-        case TetrominoKind::none:   return (WORD) COLOR::Black;
-        default:                    return (WORD) COLOR::White;
+        case TetrominoKind::I:      return (WORD)COLOR::Cyan;
+        case TetrominoKind::J:      return (WORD)COLOR::Blue;
+        case TetrominoKind::L:      return (WORD)COLOR::Orange;
+        case TetrominoKind::O:      return (WORD)COLOR::Yellow;
+        case TetrominoKind::S:      return (WORD)COLOR::Green;
+        case TetrominoKind::T:      return (WORD)COLOR::Magenta;
+        case TetrominoKind::Z:      return (WORD)COLOR::Red;
+        case TetrominoKind::none:   return (WORD)COLOR::Black;
+        default:                    return (WORD)COLOR::White;
         }
     }
 };
+
 
 #endif // !_TETRIS_DRAW_WINDOWS_CONSOLE_

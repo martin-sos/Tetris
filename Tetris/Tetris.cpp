@@ -14,6 +14,7 @@ void Tetris::placeNextTetromino()
     currentTetromino = nextTetromino;
     placeCurrentTetromino();
     nextTetromino = Tetromino();
+    show->update_preview(nextTetromino.getKind());
 }
 
 
@@ -203,6 +204,7 @@ void Tetris::destroyLine()
             entry.level++; // level-up after clearing another 10 lines
             game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
         }
+        show->update_stats(entry);
     }
 }
 

@@ -21,6 +21,7 @@ public:
         nextTetromino(Tetromino()), currentTetromino(nextTetromino)
     {
         show = s;
+        show->update_preview(nextTetromino.getKind());
         clearBoard();
         std::srand(static_cast<unsigned>(std::time(nullptr)));
     }
