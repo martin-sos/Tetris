@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include "Tetris.h"
+#include "Tetris_Draw_Windows_Console.h"
 #include "Tetris_Statistics.h"
 
 
@@ -20,7 +21,7 @@ std::string ASCII_LOGO = R"(
 int main()
 {
     std::cout << ASCII_LOGO;
-
-    Tetris T = Tetris();
+    Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
+    Tetris T = Tetris(&show);
     T.start();
 }

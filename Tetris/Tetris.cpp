@@ -8,24 +8,6 @@
 #include "Tetris.h"
 
 
-const std::string endLine = " ----------";
-
-inline char minoToChar(TetrominoKind mino)
-{
-    switch (mino)
-    {
-    case TetrominoKind::I:      return '#';
-    case TetrominoKind::J:      return '#';
-    case TetrominoKind::L:      return '#';
-    case TetrominoKind::O:      return '#';
-    case TetrominoKind::S:      return '#';
-    case TetrominoKind::T:      return '#';
-    case TetrominoKind::Z:      return '#';
-    case TetrominoKind::none:   return ' ';
-    default:                    return '?';
-    }
-}
-
 void Tetris::placeNextTetromino()
 {
     // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
@@ -63,24 +45,10 @@ void Tetris::placeCurrentTetromino()
 
     if (!isActive)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
-        draw();
+        show->draw(game_field);
         stats->add_stats(entry);
         print_stats();
     }
-}
-
-void Tetris::draw()
-{
-    system("cls");
-    for (int i = field_height-1; i >= 0; i--)
-    {
-        std::cout << "+";
-        for (auto field : game_field[i])
-            std::cout << minoToChar(field.mino);
-        std::cout << "+" << std::endl;
-    }
-    
-    std::cout << endLine;
 }
 
 void Tetris::rotate(const RotateTetromino direction)
@@ -237,9 +205,7 @@ void Tetris::destroyLine()
 
 
 void Tetris::detectKeyboardInput()
-{
-    std::cout << "Tetris::detectKeyboardInput() runs..." << std::endl;
-    
+{    
     while (isActive)
     {
         if ((GetAsyncKeyState(VK_LEFT) & 0x01))
@@ -273,16 +239,17 @@ void Tetris::detectKeyboardInput()
         {
             isActive = false;
         }
+
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
     }
 }
 
 void Tetris::run()
 {
-    std::cout << "Tetris::run() runs..." << std::endl;
     while (isActive)
     { // each eexecution of this loop let's a mino fall another row
 
-        draw();
+        show->draw(game_field);
         
         if (fall() == false)
         {
