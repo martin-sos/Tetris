@@ -199,7 +199,10 @@ void Tetris::destroyLine()
     if (destroy)
     {
         if (entry.lines % level_up == 0)
-            entry.level++; // level-up after clearing another 25 lines
+        {
+            entry.level++; // level-up after clearing another 10 lines
+            game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
+        }
     }
 }
 
@@ -257,7 +260,7 @@ void Tetris::run()
             placeNextTetromino();
         }
         
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(400));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(game_loop_sleep_time_ms));
     }
 }
 

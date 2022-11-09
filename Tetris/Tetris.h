@@ -14,6 +14,7 @@ public:
     Tetris(Tetris_Draw* s)
         :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
         isActive(false), isPaused(false), ghosting(false),
+        game_loop_sleep_time_ms(400),
         show(s),
         entry({ "Player 1", 0, 1, 0 }),
         stats(Tetris_Statistics::get_instance()),
@@ -39,6 +40,7 @@ private:
     bool isActive;                          // is a game active?
     bool isPaused;                          // is a game paused?
     bool ghosting;                          // is ghosting actived?
+    int game_loop_sleep_time_ms;            // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
     Tetris_Draw *show;
 
@@ -47,7 +49,7 @@ private:
     
     Tetromino nextTetromino;                // the TetrominoKind which is added next to the game field
     Tetromino currentTetromino;
-    
+
     void run();                             // executes the Tetris game loop; is exectued in a thread
     void detectKeyboardInput();             // listens for keyboard input; is executed in a thread
     
