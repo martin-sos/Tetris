@@ -79,13 +79,13 @@ void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
     /* draw new preview */
     switch (kind)
     {
-    case TetrominoKind::I: t[0] = "####"; t[1] = "    ";   break;
-    case TetrominoKind::J: t[0] = "#   "; t[1] = "### ";   break;
+    case TetrominoKind::I: t[0] = "####"; t[1] = "    "; break;
+    case TetrominoKind::J: t[0] = "#   "; t[1] = "### "; break;
     case TetrominoKind::L: t[0] = "   #"; t[1] = " ###"; break;
-    case TetrominoKind::O: t[0] = " ## "; t[1] = " ## ";   break;
-    case TetrominoKind::S: t[0] = "  ##"; t[1] = " ## ";  break;
-    case TetrominoKind::T: t[0] = " #  "; t[1] = "### ";  break;
-    case TetrominoKind::Z: t[0] = "##  "; t[1] = " ## ";  break;
+    case TetrominoKind::O: t[0] = " ## "; t[1] = " ## "; break;
+    case TetrominoKind::S: t[0] = "  ##"; t[1] = " ## "; break;
+    case TetrominoKind::T: t[0] = " #  "; t[1] = "### "; break;
+    case TetrominoKind::Z: t[0] = "##  "; t[1] = " ## "; break;
     }
 
     WORD color = minoToColor(kind);
@@ -102,6 +102,24 @@ void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
 
 void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry> stats)
 {
+    /* draws highscore like:
+     
+                      *** H I G H S C O R E S ***
+
+          Rank    |   Name   |   Lines  |   Level  | Score
+        ------------------------------------------------------
+        ..1.......|..Player 1|..83......|..5.......|..830.....
+        ..2.......|..Player 1|..70......|..6.......|..700.....
+        ..3.......|..Player 1|..66......|..5.......|..660.....
+        ..4.......|..Player 1|..56......|..5.......|..560.....
+        ..5.......|..Player 1|..54......|..2.......|..540.....
+        ..6.......|..gegeege.|..50......|..5.......|..500.....
+        ..7.......|..Player 1|..45......|..4.......|..450.....
+        ..8.......|..Player 1|..42......|..3.......|..420.....
+        ..9.......|..Player 1|..40......|..5.......|..400.....
+        ..10......|..Player 1|..35......|..3.......|..350.....
+    */
+
     int col_width = 9;
     std::string highscores = "             *** H I G H S C O R E S ***";
     std::string rank  = "  Rank    |";
@@ -130,7 +148,7 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
     WriteConsoleA(screen_buffer_handle, title_dash.c_str(), (DWORD)title_dash.length(), NULL, NULL);
 
    
-    // print highscore
+    // print highscores
     for (int i = 0; i < stats.size(); i++)
     { 
         std::string row_entry = "";
@@ -138,23 +156,23 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
         
         rank = std::to_string(i + 1);
         fill = std::string(col_width - rank.length() - 1, '.');
-        row_entry += ".." + rank + fill + "|";                                 // rank: 1........|
+        row_entry += ".." + rank + fill + "|";
 
         name = stats[i].name.substr(0, col_width - 1);
         fill = std::string(col_width - name.length() - 1, '.');
-        row_entry += ".." + name + fill + "|";                          // name: ..NAME.....|
+        row_entry += ".." + name + fill + "|";
 
         lines = std::to_string(stats[i].lines); 
         fill = std::string(col_width - lines.length() - 1, '.');
-        row_entry += ".." + lines + fill + "|";                         // lines: ..123.....|
+        row_entry += ".." + lines + fill + "|";
 
         level = std::to_string(stats[i].level);
         fill = std::string(col_width - level.length() - 1, '.');
-        row_entry += ".." + level + fill + "|";                         // level: ..12......|
+        row_entry += ".." + level + fill + "|";
 
         score = std::to_string(stats[i].score);
         fill = std::string(col_width - score.length() - 1, '.');
-        row_entry += ".." + score + fill;                               // score: ..1230....|
+        row_entry += ".." + score + fill;
 
         con_coord.Y++;
         SetConsoleCursorPosition(screen_buffer_handle, con_coord);

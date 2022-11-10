@@ -203,7 +203,7 @@ void Tetris::detectKeyboardInput()
     while (isActive)
     {
         if (!isPaused)
-        { // controls are enabled¨only if game is not paused
+        { // controls are enabled only if game is not paused
             if ((GetAsyncKeyState(VK_LEFT) & 0x01))
             {
                 shift(MoveTetromino::Left);
