@@ -64,7 +64,6 @@ private:
     void destroyLine(void);                 // detects a full line, destroys it and will let everything above fall down one more line
     void placeNextTetromino(void);          // sets nextTetromino at the top of the game field and creates a new Tetromino
     void placeCurrentTetromino(void);
-    void print_stats(void);
     void clearBoard(void);
 };
 
