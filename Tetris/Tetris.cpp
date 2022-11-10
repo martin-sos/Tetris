@@ -8,42 +8,13 @@
 #include "Tetris.h"
 
 
-const std::string endLine = " ----------";
-
-inline char minoToChar(TetrominoKind mino)
-{
-    switch (mino)
-    {
-    case TetrominoKind::I:      return '#';
-    case TetrominoKind::J:      return '#';
-    case TetrominoKind::L:      return '#';
-    case TetrominoKind::O:      return '#';
-    case TetrominoKind::S:      return '#';
-    case TetrominoKind::T:      return '#';
-    case TetrominoKind::Z:      return '#';
-    case TetrominoKind::none:   return ' ';
-    default:                    return '?';
-    }
-}
-
 void Tetris::placeNextTetromino()
 {
     // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
     currentTetromino = nextTetromino;
     placeCurrentTetromino();
     nextTetromino = Tetromino();
-}
-
-
-void Tetris::print_stats()
-{
-    std::vector<Tetris_Stats_entry> highscores = stats->get_high_scores();
-    std::cout << "\n\n\t H I G H S C O R E S \n\n";
-
-    for (auto row : highscores)
-    {
-        std::cout << row.name << "..." << row.lines << "..." << row.level << "..." << row.score << std::endl;
-    }
+    show->update_preview(nextTetromino.getKind());
 }
 
 void Tetris::placeCurrentTetromino()
@@ -63,24 +34,10 @@ void Tetris::placeCurrentTetromino()
 
     if (!isActive)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
-        draw();
+        show->draw_scene(game_field);
         stats->add_stats(entry);
-        print_stats();
+        show->draw_highscores(stats->get_high_scores());
     }
-}
-
-void Tetris::draw()
-{
-    system("cls");
-    for (int i = field_height-1; i >= 0; i--)
-    {
-        std::cout << "+";
-        for (auto field : game_field[i])
-            std::cout << minoToChar(field.mino);
-        std::cout << "+" << std::endl;
-    }
-    
-    std::cout << endLine;
 }
 
 void Tetris::rotate(const RotateTetromino direction)
@@ -175,6 +132,7 @@ bool Tetris::shift(const MoveTetromino direction)
 
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
+        show->draw_scene(game_field);   // update scene on each move
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
@@ -231,66 +189,78 @@ void Tetris::destroyLine()
     if (destroy)
     {
         if (entry.lines % level_up == 0)
-            entry.level++; // level-up after clearing another 25 lines
+        {
+            entry.level++; // level-up after clearing another 10 lines
+            game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
+        }
+        show->update_stats(entry);
     }
 }
 
 
 void Tetris::detectKeyboardInput()
-{
-    std::cout << "Tetris::detectKeyboardInput() runs..." << std::endl;
-    
+{    
     while (isActive)
     {
-        if ((GetAsyncKeyState(VK_LEFT) & 0x01))
-        {
-            shift(MoveTetromino::Left);
-        }
+        if (!isPaused)
+        { // controls are enabled only if game is not paused
+            if ((GetAsyncKeyState(VK_LEFT) & 0x01))
+            {
+                shift(MoveTetromino::Left);
+            }
 
-        if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
-        {
-            shift(MoveTetromino::Right);
-        }
+            if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
+            {
+                shift(MoveTetromino::Right);
+            }
 
-        if ((GetAsyncKeyState(VK_DOWN) & 0x01))
-        {
-            rotate(RotateTetromino::CounterClockwise);
-        }
+            if ((GetAsyncKeyState(VK_DOWN) & 0x01))
+            {
+                rotate(RotateTetromino::CounterClockwise);
+            }
 
-        if ((GetAsyncKeyState(VK_UP) & 0x01))
-        {
-            rotate(RotateTetromino::Clockwise);
-        }
+            if ((GetAsyncKeyState(VK_UP) & 0x01))
+            {
+                rotate(RotateTetromino::Clockwise);
+            }
 
-        if ((GetAsyncKeyState(VK_SPACE) & 0x01))
-        {
-            while(fall());
-            destroyLine();
-            placeNextTetromino();
+            if ((GetAsyncKeyState(VK_SPACE) & 0x01))
+            {
+                while (fall());
+                destroyLine();
+                placeNextTetromino();
+            }
         }
-
+        
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
-            isActive = false;
+            isPaused = !isPaused;
+            /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause ios possible */
+            GetAsyncKeyState(VK_SPACE);
+            GetAsyncKeyState(VK_UP);
+            GetAsyncKeyState(VK_DOWN);
+            GetAsyncKeyState(VK_RIGHT);
+            GetAsyncKeyState(VK_LEFT);
         }
+
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
     }
 }
 
 void Tetris::run()
 {
-    std::cout << "Tetris::run() runs..." << std::endl;
     while (isActive)
     { // each eexecution of this loop let's a mino fall another row
 
-        draw();
-        
-        if (fall() == false)
+        if (!isPaused)
         {
-            destroyLine();
-            placeNextTetromino();
+            if (fall() == false)
+            {
+                destroyLine();
+                placeNextTetromino();
+            }
         }
-        
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(400));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(game_loop_sleep_time_ms));
     }
 }
 
