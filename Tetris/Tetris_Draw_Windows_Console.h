@@ -14,6 +14,7 @@ public:
         :screen_buffer_handle(CreateConsoleScreenBuffer(GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL)),
         old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width)))
     {
+        // define location of preview, game field, current stats and overall highscores 
         coord_preview_label = { 1, 6 };
         coord_preview_tetromino = { 3, 8 };
         coord_game_field = { 10, 0 };
@@ -22,17 +23,17 @@ public:
         coord_stats_score =     { coord_stats_lines.X, coord_stats_level.Y + 2 };
         coord_stats_highscore = { coord_stats_lines.X + 15, coord_stats_lines.Y };
 
+        // setup console: set buffer, disable cursor
         SetConsoleMode(screen_buffer_handle, ENABLE_PROCESSED_OUTPUT);
         SetConsoleActiveScreenBuffer(screen_buffer_handle);
-
         CONSOLE_CURSOR_INFO cursor = { 1, FALSE };
-        SetConsoleCursorInfo(screen_buffer_handle, &cursor);    // disable cursor
+        SetConsoleCursorInfo(screen_buffer_handle, &cursor);
 
-        draw_frame();
+        draw_layout();
     }
 
-    void draw(std::vector<std::vector<Field>>) override final;
-    void draw_frame() override final;
+    void draw_scene(std::vector<std::vector<Field>>) override final;
+    void draw_layout() override final;
     void update_stats(Tetris_Stats_entry) override final;
     void update_preview(TetrominoKind) override final;
     void draw_highscores(std::vector<Tetris_Stats_entry>) override final;

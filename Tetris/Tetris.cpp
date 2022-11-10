@@ -34,7 +34,7 @@ void Tetris::placeCurrentTetromino()
 
     if (!isActive)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
-        show->draw(game_field);
+        show->draw_scene(game_field);
         stats->add_stats(entry);
         show->draw_highscores(stats->get_high_scores());
     }
@@ -132,6 +132,7 @@ bool Tetris::shift(const MoveTetromino direction)
 
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
+        show->draw_scene(game_field);   // update scene on each move
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
@@ -201,36 +202,45 @@ void Tetris::detectKeyboardInput()
 {    
     while (isActive)
     {
-        if ((GetAsyncKeyState(VK_LEFT) & 0x01))
-        {
-            shift(MoveTetromino::Left);
-        }
+        if (!isPaused)
+        { // controls are enabled¨only if game is not paused
+            if ((GetAsyncKeyState(VK_LEFT) & 0x01))
+            {
+                shift(MoveTetromino::Left);
+            }
 
-        if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
-        {
-            shift(MoveTetromino::Right);
-        }
+            if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
+            {
+                shift(MoveTetromino::Right);
+            }
 
-        if ((GetAsyncKeyState(VK_DOWN) & 0x01))
-        {
-            rotate(RotateTetromino::CounterClockwise);
-        }
+            if ((GetAsyncKeyState(VK_DOWN) & 0x01))
+            {
+                rotate(RotateTetromino::CounterClockwise);
+            }
 
-        if ((GetAsyncKeyState(VK_UP) & 0x01))
-        {
-            rotate(RotateTetromino::Clockwise);
-        }
+            if ((GetAsyncKeyState(VK_UP) & 0x01))
+            {
+                rotate(RotateTetromino::Clockwise);
+            }
 
-        if ((GetAsyncKeyState(VK_SPACE) & 0x01))
-        {
-            while(fall());
-            destroyLine();
-            placeNextTetromino();
+            if ((GetAsyncKeyState(VK_SPACE) & 0x01))
+            {
+                while (fall());
+                destroyLine();
+                placeNextTetromino();
+            }
         }
-
+        
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
             isPaused = !isPaused;
+            /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause ios possible */
+            GetAsyncKeyState(VK_SPACE);
+            GetAsyncKeyState(VK_UP);
+            GetAsyncKeyState(VK_DOWN);
+            GetAsyncKeyState(VK_RIGHT);
+            GetAsyncKeyState(VK_LEFT);
         }
 
         boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
@@ -244,7 +254,6 @@ void Tetris::run()
 
         if (!isPaused)
         {
-            show->draw(game_field);
             if (fall() == false)
             {
                 destroyLine();
