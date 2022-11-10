@@ -22,6 +22,8 @@ public:
     {
         show = s;
         show->update_preview(nextTetromino.getKind());
+        show->draw_highscores(stats->get_high_scores());
+
         clearBoard();
         std::srand(static_cast<unsigned>(std::time(nullptr)));
     }

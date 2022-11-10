@@ -11,5 +11,6 @@ public:
     virtual void draw_frame() = 0;
     virtual void update_stats(Tetris_Stats_entry) = 0;
     virtual void update_preview(TetrominoKind) = 0;
+    virtual void draw_highscores(std::vector<Tetris_Stats_entry>) = 0;
 };
 #endif

@@ -17,18 +17,6 @@ void Tetris::placeNextTetromino()
     show->update_preview(nextTetromino.getKind());
 }
 
-
-void Tetris::print_stats()
-{
-    std::vector<Tetris_Stats_entry> highscores = stats->get_high_scores();
-    std::cout << "\n\n\t H I G H S C O R E S \n\n";
-
-    for (auto row : highscores)
-    {
-        std::cout << row.name << "..." << row.lines << "..." << row.level << "..." << row.score << std::endl;
-    }
-}
-
 void Tetris::placeCurrentTetromino()
 {
     std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
@@ -48,7 +36,7 @@ void Tetris::placeCurrentTetromino()
     {   // on game over: draw the game field a very last time, save the score and print all highscores
         show->draw(game_field);
         stats->add_stats(entry);
-        print_stats();
+        show->draw_highscores(stats->get_high_scores());
     }
 }
 
@@ -242,7 +230,7 @@ void Tetris::detectKeyboardInput()
 
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
-            isActive = false;
+            isPaused = !isPaused;
         }
 
         boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
@@ -254,14 +242,15 @@ void Tetris::run()
     while (isActive)
     { // each eexecution of this loop let's a mino fall another row
 
-        show->draw(game_field);
-        
-        if (fall() == false)
+        if (!isPaused)
         {
-            destroyLine();
-            placeNextTetromino();
+            show->draw(game_field);
+            if (fall() == false)
+            {
+                destroyLine();
+                placeNextTetromino();
+            }
         }
-        
         boost::this_thread::sleep_for(boost::chrono::milliseconds(game_loop_sleep_time_ms));
     }
 }

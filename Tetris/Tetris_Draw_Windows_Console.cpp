@@ -51,8 +51,6 @@ void Tetris_Draw_Windows_Console::draw_frame()
         con_coord.Y++;
         SetConsoleCursorPosition(screen_buffer_handle, con_coord);
     }
-
-
 }
 
 void Tetris_Draw_Windows_Console::update_stats(Tetris_Stats_entry stats)
@@ -114,3 +112,65 @@ void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
     WriteConsoleA(screen_buffer_handle, t[1].c_str(), (DWORD)t[1].length(), NULL, NULL);
 }
 
+void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry> stats)
+{
+    int col_width = 9;
+    std::string highscores = "             *** H I G H S C O R E S ***";
+    std::string rank  = "  Rank    |";
+    std::string name  = "  Name    |";
+    std::string lines = "  Lines   |";
+    std::string level = "  Level   |";
+    std::string score = "  Score   ";
+    std::string title_row = rank + name + lines + level + score;
+    std::string title_dash(title_row.length(), '-');
+
+    // print title
+    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Yellow);
+    COORD con_coord = coord_stats_highscore;
+    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+    WriteConsoleA(screen_buffer_handle, highscores.c_str(), (DWORD)highscores.length(), NULL, NULL);
+
+    // print row names 
+    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
+    con_coord.Y += 2;
+    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+    WriteConsoleA(screen_buffer_handle, title_row.c_str(), (DWORD)title_row.length(), NULL, NULL);
+
+    // print dash
+    con_coord.Y++;
+    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+    WriteConsoleA(screen_buffer_handle, title_dash.c_str(), (DWORD)title_dash.length(), NULL, NULL);
+
+   
+    // print highscore
+    for (int i = 0; i < stats.size(); i++)
+    { 
+        std::string row_entry = "";
+        std::string fill = "";
+        
+        rank = std::to_string(i + 1);
+        fill = std::string(col_width - rank.length() - 1, '.');
+        row_entry += ".." + rank + fill + "|";                                 // rank: 1........|
+
+        name = stats[i].name.substr(0, col_width - 1);
+        fill = std::string(col_width - name.length() - 1, '.');
+        row_entry += ".." + name + fill + "|";                          // name: ..NAME.....|
+
+        lines = std::to_string(stats[i].lines); 
+        fill = std::string(col_width - lines.length() - 1, '.');
+        row_entry += ".." + lines + fill + "|";                         // lines: ..123.....|
+
+        level = std::to_string(stats[i].level);
+        fill = std::string(col_width - level.length() - 1, '.');
+        row_entry += ".." + level + fill + "|";                         // level: ..12......|
+
+        score = std::to_string(stats[i].score);
+        fill = std::string(col_width - score.length() - 1, '.');
+        row_entry += ".." + score + fill;                               // score: ..1230....|
+
+        con_coord.Y++;
+        SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+        WriteConsoleA(screen_buffer_handle, row_entry.c_str(), (DWORD)row_entry.length(), NULL, NULL);
+    }
+
+}

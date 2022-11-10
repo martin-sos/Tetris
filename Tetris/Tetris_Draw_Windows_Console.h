@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <string>
 
-enum class COLOR { Black = 0, Blue = 1, Green = 2, Cyan = 11, Red = 4, Magenta = 13, Orange = 12, Yellow = 14, White = 15 };
+enum class COLOR { Black = 0, Blue = 1, Green = 2, Red = 4, Gray = 8, Cyan = 11, Orange = 12, Magenta = 13, Yellow = 14, White = 15 };
 
 class Tetris_Draw_Windows_Console : public Tetris_Draw
 {
@@ -17,9 +17,10 @@ public:
         coord_preview_label = { 1, 6 };
         coord_preview_tetromino = { 3, 8 };
         coord_game_field = { 10, 0 };
-        coord_stats_lines = { coord_game_field.X + field_width + 8, 6 };
-        coord_stats_level = { coord_stats_lines.X, coord_stats_lines.Y + 2 };
-        coord_stats_score = { coord_stats_lines.X, coord_stats_level.Y + 2 };
+        coord_stats_lines =     { coord_game_field.X + field_width + 8, 6 };
+        coord_stats_level =     { coord_stats_lines.X, coord_stats_lines.Y + 2 };
+        coord_stats_score =     { coord_stats_lines.X, coord_stats_level.Y + 2 };
+        coord_stats_highscore = { coord_stats_lines.X + 15, coord_stats_lines.Y };
 
         SetConsoleMode(screen_buffer_handle, ENABLE_PROCESSED_OUTPUT);
         SetConsoleActiveScreenBuffer(screen_buffer_handle);
@@ -34,6 +35,7 @@ public:
     void draw_frame() override final;
     void update_stats(Tetris_Stats_entry) override final;
     void update_preview(TetrominoKind) override final;
+    void draw_highscores(std::vector<Tetris_Stats_entry>) override final;
 
 private:
     HANDLE screen_buffer_handle;
@@ -45,7 +47,7 @@ private:
     COORD coord_stats_lines;
     COORD coord_stats_level;
     COORD coord_stats_score;
-
+    COORD coord_stats_highscore;
 
     char minoToChar(TetrominoKind mino)
     {
