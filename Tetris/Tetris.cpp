@@ -11,7 +11,7 @@
 void Tetris::placeNextTetromino()
 {
     // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
-    currentTetromino = nextTetromino;
+    ghost = currentTetromino = nextTetromino;
     placeCurrentTetromino();
     nextTetromino = Tetromino();
     show->update_preview(nextTetromino.getKind());
@@ -43,7 +43,6 @@ void Tetris::placeCurrentTetromino()
 void Tetris::rotate(const RotateTetromino direction)
 {
     Tetromino testTetromino = currentTetromino; // test a rotation on a copy, only if successfull, execute it
-
 
     bool validRotation = true;
     testTetromino.rotateTetromino(direction);
@@ -84,7 +83,7 @@ bool Tetris::fall()
     return shift(MoveTetromino::Down);    
 }
 
-bool Tetris::tryShift(const MoveTetromino direction, Tetromino t)
+bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
 {
     int x = 0, y = 0;
     switch (direction)
@@ -132,6 +131,7 @@ bool Tetris::shift(const MoveTetromino direction)
 
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
+        updateGhost();
         show->draw_scene(game_field);   // update scene on each move
     }
 
@@ -147,6 +147,46 @@ bool Tetris::shift(const MoveTetromino direction)
     }
 
     return canMove;
+}
+
+void Tetris::updateGhost()
+{
+    if (ghosting)
+    {  
+
+        /* 1. reset previous ghost */
+        eraseGhost();
+
+        /* 2. compute ghost projection */
+        ghost = currentTetromino;
+        bool canMove = tryShift(MoveTetromino::Down, ghost);
+        while (canMove)
+        {
+            ghost.shiftTetromino(MoveTetromino::Down);
+            canMove = tryShift(MoveTetromino::Down, ghost);
+        }
+
+        /* 3. place the ghost */
+        const std::pair<int, int>* location = ghost.getLocation();
+        for (int i = 0; i < maxMinos; i++)
+        {
+            // but do not overwrite the current Tetromino when it just landed
+            if (game_field[location[i].first][location[i].second].mino == TetrominoKind::none)
+                game_field[location[i].first][location[i].second] = { TetrominoKind::Ghost, false };
+        }
+    }
+}
+
+void Tetris::eraseGhost()
+{
+    const std::pair<int, int>* location = ghost.getLocation();
+
+    /* reset previous ghost */
+    for (int i = 0; i < maxMinos; i++)
+    {
+        if (game_field[location[i].first][location[i].second].mino == TetrominoKind::Ghost)
+            game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
+    }
 }
 
 void Tetris::destroyLine()
@@ -229,6 +269,12 @@ void Tetris::detectKeyboardInput()
                 while (fall());
                 destroyLine();
                 placeNextTetromino();
+            }
+
+            if ((GetAsyncKeyState(0x47) & 0x01))
+            {
+                ghosting = !ghosting;
+                eraseGhost();
             }
         }
         

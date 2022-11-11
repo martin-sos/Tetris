@@ -3,7 +3,7 @@
 
 #include <utility>
 
-enum class TetrominoKind { none = 0, I, J, L, O, S, T, Z };
+enum class TetrominoKind { none = 0, I, J, L, O, S, T, Z, Ghost };
 enum class MoveTetromino { Left, Right, Down };
 enum class RotateTetromino { Clockwise, CounterClockwise};
 enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };

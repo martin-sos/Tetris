@@ -18,9 +18,8 @@ public:
         show(s),
         entry({ "Player 1", 0, 1, 0 }),
         stats(Tetris_Statistics::get_instance()),
-        nextTetromino(Tetromino()), currentTetromino(nextTetromino)
+        nextTetromino(Tetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
-        show = s;
         show->update_preview(nextTetromino.getKind());
         show->draw_highscores(stats->get_high_scores());
 
@@ -48,17 +47,20 @@ private:
     Tetris_Draw *show;
 
     Tetris_Stats_entry entry;
-    Tetris_Statistics* stats;
+    Tetris_Statistics *stats;
     
     Tetromino nextTetromino;                // the TetrominoKind which is added next to the game field
-    Tetromino currentTetromino;
+    Tetromino currentTetromino;             // the Tetromnino which is currently falling
+    Tetromino ghost;                        // a projection of the current Tetromino at the location where the current Tetromino would land 
 
     void run();                             // executes the Tetris game loop; is exectued in a thread
     void detectKeyboardInput();             // listens for keyboard input; is executed in a thread
     
     bool fall();                                    // lets minos fall down one more line, if there is nothing that could fall, return false, otherwise true
     bool shift(const MoveTetromino);                // ...
-    bool tryShift(const MoveTetromino, Tetromino);  // ...
+    void updateGhost();
+    void eraseGhost();
+    bool tryShift(const MoveTetromino, Tetromino) const;  // ...
     void rotate(const RotateTetromino);             // rotate a TetrominoKind Left or Right
     
     void destroyLine(void);                 // detects a full line, destroys it and will let everything above fall down one more line
