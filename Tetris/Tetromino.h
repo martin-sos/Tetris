@@ -11,12 +11,10 @@ private:
     TetrominoKind kind;
     TetrominoOrientation orientation;
     std::pair<int, int> location[maxMinos];
-    
     static std::queue<Tetromino> bag_of_seven;
 
-
     Tetromino(TetrominoKind k) {
-        kind = k; /* static_cast<TetrominoKind>((std::rand() % 7) + 1); */
+        kind = k;
         orientation = TetrominoOrientation::Zero;
         setInitiallocation(kind);
     }
@@ -30,7 +28,6 @@ private:
     void rotateS(RotateTetromino direction);
     void rotateT(RotateTetromino direction);
     void rotateZ(RotateTetromino direction);
-
 
 public:
     static Tetromino getTetromino();
