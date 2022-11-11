@@ -4,14 +4,7 @@
 #include <sqlite3.h>
 #include <iostream>
 #include <vector>
-
-struct Tetris_Stats_entry
-{
-    std::string name;
-    int lines;
-    int level;
-    int score;
-};
+#include "Tetris_Definitions.h"
 
 class Tetris_Statistics
 {

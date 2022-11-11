@@ -140,7 +140,7 @@
     <ClCompile Include="Tetris.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Tetris_Field.h" />
+    <ClInclude Include="Tetris_Definitions.h" />
     <ClInclude Include="Tetris_Draw.h" />
     <ClInclude Include="Tetris_Statistics.h" />
     <ClInclude Include="Tetromino.h" />

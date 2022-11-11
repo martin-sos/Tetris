@@ -4,10 +4,8 @@
 #include <vector>
 #include "Tetris_Draw.h"
 #include "Tetromino.h"
-#include "Tetris_Field.h"
+#include "Tetris_Definitions.h"
 #include "Tetris_Statistics.h"
-
-static constexpr const int level_up = 10;
 
 class Tetris {
 public:

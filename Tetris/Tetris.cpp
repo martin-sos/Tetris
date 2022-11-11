@@ -271,7 +271,7 @@ void Tetris::detectKeyboardInput()
                 placeNextTetromino();
             }
 
-            if ((GetAsyncKeyState(0x47) & 0x01))
+            if ((GetAsyncKeyState(VK_G) & 0x01))
             {
                 ghosting = !ghosting;
                 eraseGhost();
