@@ -10,12 +10,12 @@ void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> gam
         for (int j = 0; j < field_width; j++)
         {
             Field f = game_field[i][j];
-            if (f.mino != old_game_field[i][j].mino) // draw only what has changed 
+            if (f.mino != old_game_field[i][j].mino ) // draw only what has changed 
             {
                 WORD color = minoToColor(f.mino);
                 SetConsoleTextAttribute(screen_buffer_handle, color);
                 
-                con_coord.X = coord_game_field.X + j + 1;
+                con_coord.X = coord_game_field.X + j;
                 SetConsoleCursorPosition(screen_buffer_handle, con_coord);
                 
                 buffer = minoToChar(f.mino);
@@ -42,17 +42,20 @@ void Tetris_Draw_Windows_Console::draw_layout()
 
     /* 3. draw game field */
     std::string field(field_width, ' ');
-    con_coord = coord_game_field;
+    con_coord = coord_game_frame;
     SetConsoleCursorPosition(screen_buffer_handle, con_coord);
     for (int i = 0; i < field_height; i++)
     {
-        WriteConsoleA(screen_buffer_handle, "+", 1, NULL, NULL);
+        WriteConsoleA(screen_buffer_handle, "|", 1, NULL, NULL);
         WriteConsoleA(screen_buffer_handle, field.c_str(), field_width, NULL, NULL);
-        WriteConsoleA(screen_buffer_handle, "+", 1, NULL, NULL);
+        WriteConsoleA(screen_buffer_handle, "|", 1, NULL, NULL);
 
         con_coord.Y++;
         SetConsoleCursorPosition(screen_buffer_handle, con_coord);
     }
+    
+    field = std::string(field_width + 2, '\'');
+    WriteConsoleA(screen_buffer_handle, field.c_str(), (DWORD)field.length(), NULL, NULL);
 }
 
 void Tetris_Draw_Windows_Console::update_stats(Tetris_Stats_entry stats)
@@ -86,6 +89,7 @@ void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
     case TetrominoKind::S: t[0] = "  ##"; t[1] = " ## "; break;
     case TetrominoKind::T: t[0] = " #  "; t[1] = "### "; break;
     case TetrominoKind::Z: t[0] = "##  "; t[1] = " ## "; break;
+    case TetrominoKind::Pause: t[0] = "----"; t[1] = "----"; break;
     }
 
     WORD color = minoToColor(kind);

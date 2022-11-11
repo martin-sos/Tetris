@@ -15,6 +15,7 @@ void Tetris::placeNextTetromino()
     placeCurrentTetromino();
     nextTetromino = Tetromino();
     show->update_preview(nextTetromino.getKind());
+    show->draw_scene(game_field);
 }
 
 void Tetris::placeCurrentTetromino()
@@ -265,7 +266,7 @@ void Tetris::detectKeyboardInput()
             }
 
             if ((GetAsyncKeyState(VK_SPACE) & 0x01))
-            {
+            {  
                 while (fall());
                 destroyLine();
                 placeNextTetromino();
@@ -281,6 +282,18 @@ void Tetris::detectKeyboardInput()
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
             isPaused = !isPaused;
+            
+            if (isPaused)
+            {   /* overwrite preview and game fiield */
+                show->update_preview(TetrominoKind::Pause);
+                show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
+            }
+            else
+            {   /* redraw scene as it was before the pause */
+                show->update_preview(nextTetromino.getKind());
+                show->draw_scene(game_field);
+            }
+
             /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause ios possible */
             GetAsyncKeyState(VK_SPACE);
             GetAsyncKeyState(VK_UP);
@@ -308,15 +321,6 @@ void Tetris::run()
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(game_loop_sleep_time_ms));
     }
-}
-
-void Tetris::clearBoard(void)
-{
-    Field init = { TetrominoKind::none, false };
-
-    for(int i = 0; i < field_height; i++)
-        for(int j = 0; j < field_width; j++)
-            game_field[i][j] = init;
 }
 
 void Tetris::start()

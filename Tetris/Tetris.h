@@ -10,7 +10,7 @@
 class Tetris {
 public:
     Tetris(Tetris_Draw* s)
-        :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
+        :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }))),
         isActive(false), isPaused(false), ghosting(false),
         game_loop_sleep_time_ms(400),
         show(s),
@@ -21,7 +21,6 @@ public:
         show->update_preview(nextTetromino.getKind());
         show->draw_highscores(stats->get_high_scores());
 
-        clearBoard();
         std::srand(static_cast<unsigned>(std::time(nullptr)));
     }
 
@@ -64,7 +63,6 @@ private:
     void destroyLine(void);                 // detects a full line, destroys it and will let everything above fall down one more line
     void placeNextTetromino(void);          // sets nextTetromino at the top of the game field and creates a new Tetromino
     void placeCurrentTetromino(void);
-    void clearBoard(void);
 };
 
 #endif // _TETRIS_H_
