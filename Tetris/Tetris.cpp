@@ -15,6 +15,7 @@ void Tetris::placeNextTetromino()
     placeCurrentTetromino();
     nextTetromino = Tetromino();
     show->update_preview(nextTetromino.getKind());
+    show->draw_scene(game_field);
 }
 
 void Tetris::placeCurrentTetromino()
@@ -265,7 +266,7 @@ void Tetris::detectKeyboardInput()
             }
 
             if ((GetAsyncKeyState(VK_SPACE) & 0x01))
-            {
+            {  
                 while (fall());
                 destroyLine();
                 placeNextTetromino();
