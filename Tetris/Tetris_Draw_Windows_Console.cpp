@@ -55,7 +55,7 @@ void Tetris_Draw_Windows_Console::draw_layout()
     }
     
     field = std::string(field_width + 2, '\'');
-    WriteConsoleA(screen_buffer_handle, field.c_str(), field.length(), NULL, NULL);
+    WriteConsoleA(screen_buffer_handle, field.c_str(), (DWORD)field.length(), NULL, NULL);
 }
 
 void Tetris_Draw_Windows_Console::update_stats(Tetris_Stats_entry stats)
