@@ -47,7 +47,7 @@
     <ClInclude Include="Tetris_Draw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tetris_Field.h">
+    <ClInclude Include="Tetris_Definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,16 +2,11 @@
 #define _TETROMINO_H_
 
 #include <utility>
-
-enum class TetrominoKind { none = 0, I, J, L, O, S, T, Z };
-enum class MoveTetromino { Left, Right, Down };
-enum class RotateTetromino { Clockwise, CounterClockwise};
-enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };
-
-static constexpr const int maxMinos = 4;
+#include "Tetris_Definitions.h"
 
 class Tetromino {
 private:
+    enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };
     TetrominoKind kind;
     TetrominoOrientation orientation;
     std::pair<int, int> location[4];

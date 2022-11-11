@@ -1,8 +1,7 @@
 #ifndef _TETRIS_DRAW_
 #define _TETRIS_DRAW_
 
-#include "Tetris_Field.h"
-#include "Tetris_Statistics.h"
+#include "Tetris_Definitions.h"
 #include <vector>
 
 class Tetris_Draw {

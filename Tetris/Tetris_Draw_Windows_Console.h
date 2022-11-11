@@ -61,6 +61,7 @@ private:
         case TetrominoKind::S:      return '#';
         case TetrominoKind::T:      return '#';
         case TetrominoKind::Z:      return '#';
+        case TetrominoKind::Ghost:  return '#';
         case TetrominoKind::none:   return ' ';
         default:                    return '?';
         }
@@ -77,6 +78,7 @@ private:
         case TetrominoKind::S:      return (WORD)COLOR::Green;
         case TetrominoKind::T:      return (WORD)COLOR::Magenta;
         case TetrominoKind::Z:      return (WORD)COLOR::Red;
+        case TetrominoKind::Ghost:  return (WORD)COLOR::Gray;
         case TetrominoKind::none:   return (WORD)COLOR::Black;
         default:                    return (WORD)COLOR::White;
         }
