@@ -3,6 +3,42 @@
 #include "Tetromino.h"
 
 
+std::queue<Tetromino> Tetromino::bag_of_seven;
+
+Tetromino Tetromino::getTetromino()
+{
+    /* create a random permutation of the different Tetrominos;
+       return and pop a Tetromino from bag_of_seven until empty;
+       then re-fill again 
+    */
+
+    if (Tetromino::bag_of_seven.empty())
+    {
+        std::vector<TetrominoKind> choose_from{
+            TetrominoKind::I,
+            TetrominoKind::J,
+            TetrominoKind::L,
+            TetrominoKind::O,
+            TetrominoKind::S,
+            TetrominoKind::Z,
+            TetrominoKind::T
+        };
+
+        int i = 7;
+        while (i > 0)
+        {
+            int random_index = (std::rand() % i);
+            Tetromino::bag_of_seven.push(Tetromino(choose_from[random_index]));
+            choose_from.erase(choose_from.begin() + random_index);
+            i--;
+        }
+    }
+
+    Tetromino next = Tetromino::bag_of_seven.front();
+    Tetromino::bag_of_seven.pop();
+    return next;
+}
+
 std::pair<int, int>* Tetromino::getLocation(void)
 {
     return location;

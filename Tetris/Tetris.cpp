@@ -13,7 +13,7 @@ void Tetris::placeNextTetromino()
     // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
     ghost = currentTetromino = nextTetromino;
     placeCurrentTetromino();
-    nextTetromino = Tetromino();
+    nextTetromino = Tetromino::getTetromino();
     show->update_preview(nextTetromino.getKind());
     show->draw_scene(game_field);
 }
