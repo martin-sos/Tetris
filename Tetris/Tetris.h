@@ -32,7 +32,7 @@ public:
         delete stats;
     }
 
-    void start();               // starts a Tetris game, spawn all the needed threads, terminates as soon as game is over
+    void start();               // starts a Tetris game, spawns all needed threads, terminates as soon as game is over
 
 
 private:        
