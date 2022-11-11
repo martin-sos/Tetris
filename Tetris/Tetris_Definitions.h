@@ -1,6 +1,8 @@
 #ifndef _TETRIS_DEFINITIONS_
 #define _TETRIS_DEFINITIONS_
 
+#include <string>
+
 enum class TetrominoKind { none = 0, I, J, L, O, S, T, Z, Ghost };
 enum class MoveTetromino { Left, Right, Down };
 enum class RotateTetromino { Clockwise, CounterClockwise };
