@@ -16,7 +16,7 @@ public:
         show(s),
         entry({ "Player 1", 0, 1, 0 }),
         stats(Tetris_Statistics::get_instance()),
-        nextTetromino(Tetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
+        nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
         show->update_preview(nextTetromino.getKind());
         show->draw_highscores(stats->get_high_scores());

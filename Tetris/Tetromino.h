@@ -3,13 +3,23 @@
 
 #include <utility>
 #include "Tetris_Definitions.h"
+#include <queue>
 
 class Tetromino {
 private:
     enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };
     TetrominoKind kind;
     TetrominoOrientation orientation;
-    std::pair<int, int> location[4];
+    std::pair<int, int> location[maxMinos];
+    
+    static std::queue<Tetromino> bag_of_seven;
+
+
+    Tetromino(TetrominoKind k) {
+        kind = k; /* static_cast<TetrominoKind>((std::rand() % 7) + 1); */
+        orientation = TetrominoOrientation::Zero;
+        setInitiallocation(kind);
+    }
 
     void setInitiallocation(TetrominoKind);
 
@@ -21,12 +31,12 @@ private:
     void rotateT(RotateTetromino direction);
     void rotateZ(RotateTetromino direction);
 
+
 public:
-    Tetromino() {
-        kind = static_cast<TetrominoKind>((std::rand() % 7) + 1); 
-        orientation = TetrominoOrientation::Zero;
-        setInitiallocation(kind);
-    }
+
+    Tetromino() = delete;
+
+    static Tetromino getTetromino();
     
     void shiftTetromino(MoveTetromino direction);
     void rotateTetromino(RotateTetromino direction);
