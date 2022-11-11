@@ -15,11 +15,15 @@ public:
         old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width)))
     {
         // define location of preview, game field, current stats and overall highscores 
-        coord_preview_label = { 1, 6 };
-        coord_preview_tetromino = { 3, 8 };
-        coord_game_frame = { 10, 0 };
-        coord_game_field = { coord_game_frame.X + 1, 0 };
-        coord_stats_lines =     { coord_game_field.X + field_width + 8, 6 };
+        coord_preview_label = { 5, 11 };
+        coord_preview_tetromino = { coord_preview_label.X + 2, coord_preview_label.Y + 2 };
+        
+        coord_game_frame = { coord_preview_label.X + 13, coord_preview_label.Y - 5 };
+        coord_game_field = { coord_game_frame.X + 1, coord_game_frame.Y };
+        
+        
+        
+        coord_stats_lines =     { coord_game_field.X + field_width + 8, coord_preview_label.Y };
         coord_stats_level =     { coord_stats_lines.X, coord_stats_lines.Y + 2 };
         coord_stats_score =     { coord_stats_lines.X, coord_stats_level.Y + 2 };
         coord_stats_highscore = { coord_stats_lines.X + 15, coord_stats_lines.Y };
