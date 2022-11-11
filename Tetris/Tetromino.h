@@ -33,9 +33,6 @@ private:
 
 
 public:
-
-    Tetromino() = delete;
-
     static Tetromino getTetromino();
     
     void shiftTetromino(MoveTetromino direction);

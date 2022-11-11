@@ -7,6 +7,11 @@ std::queue<Tetromino> Tetromino::bag_of_seven;
 
 Tetromino Tetromino::getTetromino()
 {
+    /* create a random permutation of the different Tetrominos;
+       return and pop a Tetromino from bag_of_seven until empty;
+       then re-fill again 
+    */
+
     if (Tetromino::bag_of_seven.empty())
     {
         std::vector<TetrominoKind> choose_from{
@@ -27,7 +32,6 @@ Tetromino Tetromino::getTetromino()
             choose_from.erase(choose_from.begin() + random_index);
             i--;
         }
-
     }
 
     Tetromino next = Tetromino::bag_of_seven.front();
