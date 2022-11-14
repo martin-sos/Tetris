@@ -5,6 +5,8 @@ https://tetris.wiki/Tetris_Guideline. Another goal is to make it run on Windows,
 
 I am very interested in honest feedback and I would be happy about collaboration :-).
 
+![windows console screenshot](windows_console.png)
+
 ## Playing Tetris
 < arrow left >  - move Tetromino to the left  
 < arrow rigth > - move Tetromino to the rigth  
