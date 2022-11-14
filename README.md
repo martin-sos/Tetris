@@ -1,6 +1,6 @@
 # Tetris
 
-This project is mainly for learning C++. Besides that, I would like to implement Tetris according the the "Tetris Guideline" as formulated here:
+This project is mainly for learning C++. Besides that, I would like to implement Tetris according the "Tetris Guideline" as formulated here:
 https://tetris.wiki/Tetris_Guideline. Another goal is to make it run on Windows, Linux and Mac, in console mode and later also in gui mode. 
 
 I am very interested in honest feedback and I would be happy about collaboration :-).
