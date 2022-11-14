@@ -1,5 +1,6 @@
 #include "Tetris_Draw_Windows_Console.h"
 
+#if (defined (_WIN32) || defined (_WIN64))
 
 void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> game_field)
 {
@@ -184,3 +185,5 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
     }
 
 }
+
+#endif // (defined (_WIN32) || defined (_WIN64))

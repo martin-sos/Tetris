@@ -17,7 +17,12 @@ std::string ASCII_LOGO = R"(
 int main()
 {
     std::cout << ASCII_LOGO;
+#if (defined (_WIN32) || defined (_WIN64))
     Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
+#elif (defined LINUX) || defined (__linux__))
+    Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
+#endif
+
     Tetris T = Tetris(&show);
     T.start();
     
