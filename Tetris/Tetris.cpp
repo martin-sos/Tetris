@@ -132,7 +132,6 @@ bool Tetris::shift(const MoveTetromino direction)
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
         updateGhost();
-        //show->draw_scene(game_field);   // update scene on each move
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
@@ -233,7 +232,6 @@ void Tetris::destroyLine()
             entry.level++; // level-up after clearing another 10 lines
             game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
         }
-        //show->update_stats(entry);
     }
 }
 
@@ -291,7 +289,7 @@ void Tetris::detectKeyboardInput()
                 show->draw_scene(game_field);
             }
 
-            /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause ios possible */
+            /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause is possible */
             GetAsyncKeyState(VK_SPACE);
             GetAsyncKeyState(VK_UP);
             GetAsyncKeyState(VK_DOWN);
