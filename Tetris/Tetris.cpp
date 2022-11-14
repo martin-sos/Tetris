@@ -15,10 +15,9 @@ void Tetris::placeNextTetromino()
     placeCurrentTetromino();
     nextTetromino = Tetromino::getTetromino();
     show->update_preview(nextTetromino.getKind());
-    show->draw_scene(game_field);
 }
 
-void Tetris::placeCurrentTetromino()
+void Tetris:: placeCurrentTetromino()
 {
     std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
     TetrominoKind kind = currentTetromino.getKind();
@@ -133,7 +132,7 @@ bool Tetris::shift(const MoveTetromino direction)
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
         updateGhost();
-        show->draw_scene(game_field);   // update scene on each move
+        //show->draw_scene(game_field);   // update scene on each move
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
@@ -234,7 +233,7 @@ void Tetris::destroyLine()
             entry.level++; // level-up after clearing another 10 lines
             game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
         }
-        show->update_stats(entry);
+        //show->update_stats(entry);
     }
 }
 
@@ -267,9 +266,7 @@ void Tetris::detectKeyboardInput()
 
             if ((GetAsyncKeyState(VK_SPACE) & 0x01))
             {  
-                while (fall());
-                destroyLine();
-                placeNextTetromino();
+                letFall = true;
             }
 
             if ((GetAsyncKeyState(VK_G) & 0x01))
@@ -284,7 +281,7 @@ void Tetris::detectKeyboardInput()
             isPaused = !isPaused;
             
             if (isPaused)
-            {   /* overwrite preview and game fiield */
+            {   /* overwrite preview and game field */
                 show->update_preview(TetrominoKind::Pause);
                 show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
             }
@@ -308,18 +305,36 @@ void Tetris::detectKeyboardInput()
 
 void Tetris::run()
 {
+    int tetris_sleep_period_ms = game_loop_sleep_time_ms;
+    int thread_sleep_period_ms = 10;
+    
+    /* main game loop */
     while (isActive)
-    { // each eexecution of this loop let's a mino fall another row
-
+    {
         if (!isPaused)
         {
-            if (fall() == false)
+            if (tetris_sleep_period_ms <= 0 || letFall)
             {
-                destroyLine();
-                placeNextTetromino();
+                bool could_fall = false;
+                do {
+                    could_fall = fall();        // every period tetris_sleep_period_ms let the stone fall
+                    letFall &= could_fall;
+                } while (letFall);              // if space has been pressed, let the current Tetromino fall to the very bottom
+
+                letFall = false;
+                
+                if(could_fall == false)         // if the very bottom has been reached
+                {
+                    destroyLine();
+                    show->update_stats(entry);
+                    placeNextTetromino();
+                }
+                tetris_sleep_period_ms = game_loop_sleep_time_ms;   // wind up the sleep time again
             }
+            show->draw_scene(game_field);       
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(game_loop_sleep_time_ms));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_period_ms));
+        tetris_sleep_period_ms -= thread_sleep_period_ms;
     }
 }
 

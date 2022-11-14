@@ -134,7 +134,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Tetris_Draw_Windows_Console.cpp" />
-    <ClCompile Include="Tetris_Draw_Windows_Console.h" />
     <ClCompile Include="Tetris_Statistics.cpp" />
     <ClCompile Include="Tetromino.cpp" />
     <ClCompile Include="Tetris.cpp" />
@@ -142,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="Tetris_Definitions.h" />
     <ClInclude Include="Tetris_Draw.h" />
+    <ClInclude Include="Tetris_Draw_Windows_Console.h" />
     <ClInclude Include="Tetris_Statistics.h" />
     <ClInclude Include="Tetromino.h" />
     <ClInclude Include="Tetris.h" />
