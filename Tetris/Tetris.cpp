@@ -17,7 +17,7 @@ void Tetris::placeNextTetromino()
     show->update_preview(nextTetromino.getKind());
 }
 
-void Tetris:: placeCurrentTetromino()
+void Tetris::placeCurrentTetromino()
 {
     std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
     TetrominoKind kind = currentTetromino.getKind();
