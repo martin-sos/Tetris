@@ -11,6 +11,5 @@ class Tetris_Draw_Linux_Console : public Tetris_Draw
 {
 
 };
-
-#endif // (defined LINUX) || defined (__linux__))
+#endif // ((defined LINUX) || defined (__linux__))
 #endif // _TETRIS_DRAW_LINUX_CONSOLE_H_
