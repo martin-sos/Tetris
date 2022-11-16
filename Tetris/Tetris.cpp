@@ -2,7 +2,6 @@
 #include <string>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
-#include <windows.h>
 #include "Tetris.h"
 
 
@@ -30,12 +29,15 @@ void Tetris::placeCurrentTetromino()
         game_field[location[i].first][location[i].second] = { kind, false };
     }
 
+    updateGhost();
+
     if (!isActive)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
         show->draw_scene(game_field);
         stats->add_stats(entry);
         show->draw_highscores(stats->get_high_scores());
     }
+    
 }
 
 void Tetris::rotate(const RotateTetromino direction)
@@ -129,11 +131,10 @@ bool Tetris::shift(const MoveTetromino direction)
 
         currentTetromino.shiftTetromino(direction);
         placeCurrentTetromino();
-        updateGhost();
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
-    if (canMove == FALSE && direction == MoveTetromino::Down)
+    if (canMove == false && direction == MoveTetromino::Down)
     {
         for (auto i = maxMinos - 1; i >= 0; i--)
         {
@@ -150,7 +151,6 @@ void Tetris::updateGhost()
 {
     if (ghosting)
     {  
-
         /* 1. reset previous ghost */
         eraseGhost();
 
@@ -225,7 +225,7 @@ void Tetris::destroyLine()
 
     if (destroy)
     {
-        if (entry.lines % level_up == 0)
+        if (entry.lines / level_up == entry.level)
         {
             entry.level++; // level-up after clearing another 10 lines
             game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
@@ -233,84 +233,39 @@ void Tetris::destroyLine()
     }
 }
 
+void Tetris::key_escape()
+{
+    isPaused = !isPaused;
 
-void Tetris::detectKeyboardInput()
-{    
-    while (isActive)
-    {
-        if (!isPaused)
-        { // controls are enabled only if game is not paused
-            if ((GetAsyncKeyState(VK_LEFT) & 0x01))
-            {
-                shift(MoveTetromino::Left);
-            }
-
-            if ((GetAsyncKeyState(VK_RIGHT) & 0x01))
-            {
-                shift(MoveTetromino::Right);
-            }
-
-            if ((GetAsyncKeyState(VK_DOWN) & 0x01))
-            {
-                rotate(RotateTetromino::CounterClockwise);
-            }
-
-            if ((GetAsyncKeyState(VK_UP) & 0x01))
-            {
-                rotate(RotateTetromino::Clockwise);
-            }
-
-            if ((GetAsyncKeyState(VK_SPACE) & 0x01))
-            {  
-                letFall = true;
-            }
-
-            if ((GetAsyncKeyState(VK_G) & 0x01))
-            {
-                ghosting = !ghosting;
-                eraseGhost();
-            }
-        }
-        
-        if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
-        {
-            isPaused = !isPaused;
-            
-            if (isPaused)
-            {   /* overwrite preview and game field */
-                show->update_preview(TetrominoKind::Pause);
-                show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
-            }
-            else
-            {   /* redraw scene as it was before the pause */
-                show->update_preview(nextTetromino.getKind());
-                show->draw_scene(game_field);
-            }
-
-            /* flush keyboard input in the meantime, otherwise steering Tetrominos although pause is possible */
-            GetAsyncKeyState(VK_SPACE);
-            GetAsyncKeyState(VK_UP);
-            GetAsyncKeyState(VK_DOWN);
-            GetAsyncKeyState(VK_RIGHT);
-            GetAsyncKeyState(VK_LEFT);
-        }
-
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+    if (isPaused)
+    {   /* overwrite preview and game field */
+        show->update_preview(TetrominoKind::Pause);
+        show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
+    }
+    else
+    {   /* redraw scene as it was before the pause */
+        show->update_preview(nextTetromino.getKind());
+        show->draw_scene(game_field);
     }
 }
 
 void Tetris::run()
 {
-    int tetris_sleep_period_ms = game_loop_sleep_time_ms;
-    int thread_sleep_period_ms = 10;
+    int thread_sleep_period_ms = 16;
+    auto start_time = std::chrono::high_resolution_clock::now();
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
     
     /* main game loop */
     while (isActive)
     {
         if (!isPaused)
         {
-            if (tetris_sleep_period_ms <= 0 || letFall)
+            end_time = std::chrono::high_resolution_clock::now();
+            duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
+            if (duration_ms >= game_loop_sleep_time_ms || letFall)
             {
+                start_time = std::chrono::high_resolution_clock::now();
                 bool could_fall = false;
                 do {
                     could_fall = fall();        // every period tetris_sleep_period_ms let the stone fall
@@ -325,12 +280,10 @@ void Tetris::run()
                     show->update_stats(entry);
                     placeNextTetromino();
                 }
-                tetris_sleep_period_ms = game_loop_sleep_time_ms;   // wind up the sleep time again
             }
             show->draw_scene(game_field);       
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_period_ms));
-        tetris_sleep_period_ms -= thread_sleep_period_ms;
     }
 }
 
@@ -346,10 +299,11 @@ void Tetris::start()
         
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));
-        boost::thread input_thread(boost::bind(&Tetris::detectKeyboardInput, this));
+        boost::thread keyboard_thread(detectKeyBoardinput, this);
 
         game_thread.join();
-        input_thread.join();
+        keyboard_thread.interrupt();
+        keyboard_thread.join();
 
         isActive = false;
     }
