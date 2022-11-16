@@ -251,7 +251,6 @@ void Tetris::key_escape()
 
 void Tetris::run()
 {
-    int thread_sleep_period_ms = 16;
     auto start_time = std::chrono::high_resolution_clock::now();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
@@ -283,7 +282,7 @@ void Tetris::run()
             }
             show->draw_scene(game_field);       
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_period_ms));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 
@@ -299,11 +298,18 @@ void Tetris::start()
         
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));
-        boost::thread keyboard_thread(detectKeyBoardinput, this);
+        
+        boost::thread keyboard_thread;
+        if(detectKeyBoardinput != nullptr)
+            keyboard_thread = boost::thread(detectKeyBoardinput, this);
 
         game_thread.join();
-        keyboard_thread.interrupt();
-        keyboard_thread.join();
+        
+        if (detectKeyBoardinput != nullptr)
+        {
+            keyboard_thread.interrupt();
+            keyboard_thread.join();
+        }
 
         isActive = false;
     }

@@ -52,7 +52,7 @@ void detectKeyboardInput(Tetris *T)
             GetAsyncKeyState(VK_LEFT);
         }
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 

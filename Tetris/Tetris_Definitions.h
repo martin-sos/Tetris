@@ -16,6 +16,8 @@ static constexpr const int VK_G = 0x047;            // code for key G
 
 static constexpr const int maxMinos = 4;            // number of minos a Tetromino is composed of
 
+static constexpr const int thread_sleep_time_in_ms = 1000 / 60;
+
 /* the Tetris game filed is composed of Field elements */
 struct Field {
     TetrominoKind mino;     // describes the kind of the stone

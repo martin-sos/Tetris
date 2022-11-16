@@ -9,7 +9,7 @@
 
 class Tetris {
 public:
-    Tetris(Tetris_Draw* s, void (*f)(Tetris *) )
+    Tetris(Tetris_Draw* s, void (*f)(Tetris*) =nullptr)
         :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }))),
         isActive(false), isPaused(false), ghosting(false), letFall(false),
         game_loop_sleep_time_ms(400),
