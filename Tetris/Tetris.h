@@ -52,8 +52,8 @@ private:
     bool letFall;                                   // if true, then let the current Tetromino fall to the very bottom
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
-    Tetris_Draw *show;
-    void (* const detectKeyboardInput)(Tetris *);    // pointer to user defined function which detects keyboard input
+    Tetris_Draw * const show;
+    void (* const detectKeyboardInput)(Tetris *);   // pointer to user defined function which detects keyboard input
 
     Tetris_Stats_entry entry;
     Tetris_Statistics *stats;
