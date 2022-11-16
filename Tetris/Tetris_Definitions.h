@@ -11,6 +11,9 @@ static constexpr const int field_width = 10;        // width of the Tetris game 
 static constexpr const int field_height = 20;       // heigth of the Tetris game field
 
 static constexpr const int level_up = 10;           // number of lines needed for a level up
+static constexpr const int points_per_line = 10;    // points per destroyed line    
+static constexpr const int initial_gravity = 400;   // gravity constant for level 1
+static constexpr const int gravity_reduction = 20;  // in ms; amount of which the waiting time per level up will be decreased
 
 static constexpr const int VK_G = 0x047;            // code for key G
 

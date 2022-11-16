@@ -202,7 +202,7 @@ void Tetris::destroyLine()
         {
             destroy = true;
             entry.lines++;
-            entry.score += 10;
+            entry.score += points_per_line;
 
             // destroy full row
             for (int j = 0; j < field_width; j++)
@@ -227,9 +227,9 @@ void Tetris::destroyLine()
     if (destroy)
     {
         if (entry.lines / level_up == entry.level)
-        {
-            entry.level++; // level-up after clearing another 10 lines
-            game_loop_sleep_time_ms = game_loop_sleep_time_ms - (entry.level - 1) * 20; // reduce sleep by 20ms, and hence speed up the game
+        {   // after clearing another 10 lines...
+            entry.level++; // ...level-up 
+            game_loop_sleep_time_ms -= gravity_reduction ; // ..reduce sleep time by gravity constant, and hence speed up the game
         }
     }
 }
@@ -265,7 +265,7 @@ void Tetris::run()
             duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
             if (duration_ms >= game_loop_sleep_time_ms || letFall)
             {
-                start_time = std::chrono::high_resolution_clock::now();
+                start_time = end_time;
                 bool could_fall = false;
                 do {
                     could_fall = fall();        // every period tetris_sleep_period_ms let the stone fall
