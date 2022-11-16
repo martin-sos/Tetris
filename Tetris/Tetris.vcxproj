@@ -148,6 +148,10 @@
     <ClInclude Include="Tetromino.h" />
     <ClInclude Include="Tetris.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\license.md" />
+    <None Include="..\README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -30,6 +30,9 @@
     <ClCompile Include="Tetris_Draw_Windows_Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tetris_Draw_Linux_Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tetris.h">
@@ -50,5 +53,12 @@
     <ClInclude Include="Tetris_Draw_Windows_Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tetris_Draw_Linux_Console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\license.md" />
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>
