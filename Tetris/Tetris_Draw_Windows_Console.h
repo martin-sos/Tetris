@@ -1,6 +1,8 @@
 #ifndef _TETRIS_DRAW_WINDOWS_CONSOLE_
 #define _TETRIS_DRAW_WINDOWS_CONSOLE_
 
+#if (defined (_WIN32) || defined (_WIN64))
+
 #include "Tetris_Draw.h"
 #include <Windows.h>
 #include <string>
@@ -95,4 +97,5 @@ private:
 };
 
 
+#endif // (defined (_WIN32) || defined (_WIN64))
 #endif // !_TETRIS_DRAW_WINDOWS_CONSOLE_
