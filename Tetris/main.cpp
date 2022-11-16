@@ -1,7 +1,12 @@
 ﻿#include <iostream>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
+
+// TODO: once another plartform is added, exclude platform specific parts into separate files and control interface usage via header files
+#if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
+#endif
+
 #include "Tetris.h"
 #include "Tetris_Draw_Windows_Console.h"
 
@@ -18,6 +23,7 @@ std::string ASCII_LOGO = R"(
 )";
 
 
+#if (defined (_WIN32) || defined (_WIN64))
 void detectKeyboardInput(Tetris *T)
 {
     while (1)
@@ -55,17 +61,20 @@ void detectKeyboardInput(Tetris *T)
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
+#endif
 
 int main()
 {
     std::cout << ASCII_LOGO;
 #if (defined (_WIN32) || defined (_WIN64))
     Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
+    void (*keyboard_input)(Tetris * Tetris_object) = detectKeyboardInput;
 #elif (defined LINUX) || defined (__linux__))
     Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
+    void (*func)(Tetris * Tetris_object) = nullptr;
 #endif
 
-    Tetris T = Tetris(&show, detectKeyboardInput);
+    Tetris T = Tetris(&show, keyboard_input);
     T.start();
    
     
