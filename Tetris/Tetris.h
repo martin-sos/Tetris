@@ -14,7 +14,7 @@ public:
         isActive(false), isPaused(false), ghosting(false), letFall(false),
         game_loop_sleep_time_ms(400),
         show(s),
-        detectKeyBoardinput(f),
+        detectKeyboardInput(f),
         entry({ "Player 1", 0, 1, 0 }),
         stats(Tetris_Statistics::get_instance()),
         nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
@@ -53,7 +53,7 @@ private:
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
     Tetris_Draw *show;
-    void (* const detectKeyBoardinput)(Tetris *);    // pointer to user defined function which detects keyboard input
+    void (* const detectKeyboardInput)(Tetris *);    // pointer to user defined function which detects keyboard input
 
     Tetris_Stats_entry entry;
     Tetris_Statistics *stats;

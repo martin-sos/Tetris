@@ -300,12 +300,12 @@ void Tetris::start()
         boost::thread game_thread(boost::bind(&Tetris::run, this));
         
         boost::thread keyboard_thread;
-        if(detectKeyBoardinput != nullptr)
-            keyboard_thread = boost::thread(detectKeyBoardinput, this);
+        if(detectKeyboardInput != nullptr)
+            keyboard_thread = boost::thread(detectKeyboardInput, this);
 
         game_thread.join();
         
-        if (detectKeyBoardinput != nullptr)
+        if (detectKeyboardInput != nullptr)
         {
             keyboard_thread.interrupt();
             keyboard_thread.join();
