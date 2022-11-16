@@ -24,13 +24,13 @@ How to draw then? The Tetris constructor expects as its first argument a pointer
 The Tetris class calls this interface accordingly. Adding another visualisation of Tetris means to implement the interface Tetris_Draw.
 
 How does the Tetris class react on keyboard inputs? Keyboard input shall be signaled by the user calling the public interface of the Tetris class:
-- for <arrow up>, call `void key_up();`    
-- for <arrow down>, call `void key_down();`  
-- for <arrow left>, call `void key_left();`  
-- for <arrow right>, call `void key_right();` 
-- for <space>, call `void key_space();` 
-- for <g>, `void key_g();`    
-- for <escape>, call `void key_escape();`
+- for < arrow up >, call `void key_up();`    
+- for < arrow down >, call `void key_down();`  
+- for < arrow left >, call `void key_left();`  
+- for < arrow right >, call `void key_right();` 
+- for < space >, call `void key_space();` 
+- for < g >, `void key_g();`    
+- for < escape >, call `void key_escape();`
 
 Thus, it is the responsibility of the user to detect keyboard inputs and signal those to the Tetris object. Optionally, as a second argument to the Tetris constuctor, 
 the user can provide a function pointer `void (*func)(Tetris *Tetris_object)`. The adressed function is supposed to perform the keyboard detection and is expected to call 
