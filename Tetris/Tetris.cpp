@@ -29,6 +29,7 @@ void Tetris::placeCurrentTetromino()
         game_field[location[i].first][location[i].second] = { kind, false };
     }
 
+    // as the position of the current tetromino is now determined, the position of its ghost can be determined as well 
     updateGhost();
 
     if (!isActive)
