@@ -296,40 +296,43 @@ void Tetris::run()
 
 void Tetris::start()
 {
-
-    boost::thread keyboard_thread;
-    if (detectKeyboardInput != nullptr)
-        keyboard_thread = boost::thread(detectKeyboardInput, this);
-
-    game_state = Tetris_State::playing;
-
-    do
+    if (game_state == Tetris_State::idle)
     {
-        show->draw_layout();
-        show->update_preview(nextTetromino.getKind());
-        show->draw_highscores(stats->get_high_scores());
+        boost::thread keyboard_thread;
+        if (detectKeyboardInput != nullptr)
+            keyboard_thread = boost::thread(detectKeyboardInput, this);
 
-        placeNextTetromino();
-        boost::thread game_thread(boost::bind(&Tetris::run, this));
-        game_thread.join();
+        game_state = Tetris_State::playing;
 
-        /* ***  from here : game is over *** */
+        do
+        {
+            show->draw_layout();
+            show->update_preview(nextTetromino.getKind());
+            show->draw_highscores(stats->get_high_scores());
 
-        // reset game state
-        game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
-        game_loop_sleep_time_ms = initial_gravity;
-        entry.level = 1; entry.lines = 0; entry.score = 0;
+            placeNextTetromino();
+            boost::thread game_thread(boost::bind(&Tetris::run, this));
+            game_thread.join();
 
-        show->draw_game_over();
+            /* ***  from here : game is over *** */
 
-        /* busy wait for user quitting or starting another game */
-        while (game_state == Tetris_State::game_over);
+            // reset game state
+            game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
+            game_loop_sleep_time_ms = initial_gravity;
+            entry.level = 1; entry.lines = 0; entry.score = 0;
 
-    } while (game_state == Tetris_State::playing);
+            show->draw_game_over();
 
-    if (detectKeyboardInput != nullptr)
-    {
-        keyboard_thread.interrupt();
-        keyboard_thread.join();
+            /* busy wait for user quitting or starting another game */
+            while (game_state == Tetris_State::game_over);
+
+        } while (game_state == Tetris_State::playing);
+
+        if (detectKeyboardInput != nullptr)
+        {
+            keyboard_thread.interrupt();
+            keyboard_thread.join();
+        }
     }
+
 }
