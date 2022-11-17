@@ -11,7 +11,8 @@ class Tetris {
 public:
     Tetris(Tetris_Draw* s, void (*f)(Tetris*) =nullptr)
         :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }))),
-        isActive(false), isPaused(false), ghosting(false), letFall(false),
+        game_state(Tetris_State::idle),
+        ghosting(false), letFall(false),
         game_loop_sleep_time_ms(initial_gravity),
         show(s),
         detectKeyboardInput(f),
@@ -19,10 +20,6 @@ public:
         stats(Tetris_Statistics::get_instance()),
         nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
-        show->update_preview(nextTetromino.getKind());
-        show->draw_highscores(stats->get_high_scores());
-
-        std::srand(static_cast<unsigned>(std::time(nullptr)));
     }
 
     ~Tetris()
@@ -30,26 +27,81 @@ public:
         delete stats;
     }
 
-    void start();               // starts a Tetris game, spawns all needed threads, terminates as soon as game is over
+    void start();   // starts a Tetris game, spawns all needed threads, terminates as soon as game is over
 
-    void key_up()   { if (isActive && !isPaused) rotate(RotateTetromino::Clockwise); }
-    void key_down() { if (isActive && !isPaused) rotate(RotateTetromino::CounterClockwise); }
-    void key_left() { if (isActive && !isPaused) shift(MoveTetromino::Left); }
-    void key_right(){ if (isActive && !isPaused) shift(MoveTetromino::Right); }
-    void key_space(){ if (isActive && !isPaused) letFall = true; }
-    void key_g()    { if (isActive && !isPaused) (ghosting = !ghosting) ? updateGhost() : eraseGhost(); }
+    void key_up()   { if (game_state == Tetris_State::playing) rotate(RotateTetromino::Clockwise); }
+    void key_down() { if (game_state == Tetris_State::playing) rotate(RotateTetromino::CounterClockwise); }
+    void key_left() { if (game_state == Tetris_State::playing) shift(MoveTetromino::Left); }
+    void key_right(){ if (game_state == Tetris_State::playing) shift(MoveTetromino::Right); }
+    void key_space(){ if (game_state == Tetris_State::playing) letFall = true; }
+    void key_g()    { if (game_state == Tetris_State::playing) (ghosting = !ghosting) ? updateGhost() : eraseGhost(); }
+    
+    void key_q()    
+    { 
+        if (game_state == Tetris_State::playing || game_state == Tetris_State::game_over)
+            game_state = Tetris_State::quit;
+    }    
+
+    void key_s()    
+    { 
+        if (game_state == Tetris_State::game_over)
+            game_state = Tetris_State::playing;
+    }   
+    
     void key_escape(); 
     
 
 
 private:        
 
+    /* 
+         *** Tetris state machine *** 
+       
+       STATE   |     EVENT     |   STATE
+    _______________________________________
+               |    Tetris()   |   idle
+    ---------------------------------------
+        idle   |    start()    |  playing
+    ---------------------------------------
+      playing  |    key_q()    |   quit
+    ---------------------------------------
+      playing  |  key_escape() |   pause 
+    ---------------------------------------
+       pause   |  key_escape() |   pause 
+    ---------------------------------------
+               |  placing new  | 
+      playing  | Tetromino on  | game_over
+               | occupied field|  
+    ---------------------------------------
+     game_over |    key_s()    |  playing
+    ---------------------------------------
+     game_over |    key_q()    |   quit
+    ---------------------------------------
+      playing  |    key_up()   |  playing
+    ---------------------------------------
+      playing  |   key_down()  |  playing
+    ---------------------------------------
+      playing  |   key_left()  |  playing
+    ---------------------------------------
+      playing  |   key_right() |  playing
+    ---------------------------------------
+      playing  |   key_space() |  playing
+    ---------------------------------------
+      playing  |    key_g()    |  playing
+    ---------------------------------------
+
+
+
+    */
+
+    enum class Tetris_State { idle, playing, pause, game_over, quit };
+
     std::vector<std::vector<Field>> game_field;     // the lower left corner of the game field is defined as the entry at row 0, column 0
+    Tetris_State game_state;
     
-    bool isActive;                                  // is a game active?
-    bool isPaused;                                  // is a game paused?
     bool ghosting;                                  // is ghosting actived?
     bool letFall;                                   // if true, then let the current Tetromino fall to the very bottom
+
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
     Tetris_Draw * const show;

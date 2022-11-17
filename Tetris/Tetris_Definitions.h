@@ -15,7 +15,9 @@ static constexpr const int points_per_line = 10;    // points per destroyed line
 static constexpr const int initial_gravity = 400;   // gravity constant for level 1
 static constexpr const int gravity_reduction = 20;  // in ms; amount of which the waiting time per level up will be decreased
 
-static constexpr const int VK_G = 0x047;            // code for key G
+static constexpr const int VK_G = (int)'G';         // ascii code for key G
+static constexpr const int VK_Q = (int)'Q';         // ascii code for key Q
+static constexpr const int VK_C = (int)'S';         // ascii code for key S
 
 static constexpr const int maxMinos = 4;            // number of minos a Tetromino is composed of
 

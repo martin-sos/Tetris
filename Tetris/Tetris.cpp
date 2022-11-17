@@ -23,7 +23,7 @@ void Tetris::placeCurrentTetromino()
     {
         // detect game over
         if (game_field[location[i].first][location[i].second].occupied)
-            isActive = false;
+            game_state = Tetris_State::game_over;
         
         // place the next stone anyway
         game_field[location[i].first][location[i].second] = { kind, false };
@@ -32,7 +32,7 @@ void Tetris::placeCurrentTetromino()
     // as the position of the current tetromino is now determined, the position of its ghost can be determined as well 
     updateGhost();
 
-    if (!isActive)
+    if (game_state == Tetris_State::game_over)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
         show->draw_scene(game_field);
         stats->add_stats(entry);
@@ -236,17 +236,24 @@ void Tetris::destroyLine()
 
 void Tetris::key_escape()
 {
-    isPaused = !isPaused;
 
-    if (isPaused)
-    {   /* overwrite preview and game field */
+    if (game_state == Tetris_State::playing)
+    {
+        game_state = Tetris_State::pause;
+        /* overwrite preview and game field */
         show->update_preview(TetrominoKind::Pause);
         show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
     }
-    else
-    {   /* redraw scene as it was before the pause */
+    else if (game_state == Tetris_State::pause)
+    {
+        game_state = Tetris_State::playing;
+        /* redraw scene as it was before the pause */
         show->update_preview(nextTetromino.getKind());
         show->draw_scene(game_field);
+    }
+    else
+    {
+        /* nothing to do */
     }
 }
 
@@ -257,9 +264,9 @@ void Tetris::run()
     auto duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
     
     /* main game loop */
-    while (isActive)
+    while (game_state == Tetris_State::playing || game_state == Tetris_State::pause)
     {
-        if (!isPaused)
+        if (game_state == Tetris_State::playing)
         {
             end_time = std::chrono::high_resolution_clock::now();
             duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
@@ -289,29 +296,43 @@ void Tetris::run()
 
 void Tetris::start()
 {
-    if (!isActive)
+    if (game_state == Tetris_State::idle)
     {
-        isActive = true;
-        isPaused = false;
-        entry.level = 1;
-        entry.score = 0;
-        entry.lines = 0;
-        
-        placeNextTetromino();
-        boost::thread game_thread(boost::bind(&Tetris::run, this));
-        
         boost::thread keyboard_thread;
-        if(detectKeyboardInput != nullptr)
+        if (detectKeyboardInput != nullptr)
             keyboard_thread = boost::thread(detectKeyboardInput, this);
 
-        game_thread.join();
-        
+        game_state = Tetris_State::playing;
+
+        do
+        {
+            show->draw_layout();
+            show->update_preview(nextTetromino.getKind());
+            show->draw_highscores(stats->get_high_scores());
+
+            placeNextTetromino();
+            boost::thread game_thread(boost::bind(&Tetris::run, this));
+            game_thread.join();
+
+            /* ***  from here : game is over *** */
+
+            // reset game state
+            game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
+            game_loop_sleep_time_ms = initial_gravity;
+            entry.level = 1; entry.lines = 0; entry.score = 0;
+
+            show->draw_game_over();
+
+            /* busy wait for user quitting or starting another game */
+            while (game_state == Tetris_State::game_over);
+
+        } while (game_state == Tetris_State::playing);
+
         if (detectKeyboardInput != nullptr)
         {
             keyboard_thread.interrupt();
             keyboard_thread.join();
         }
-
-        isActive = false;
     }
+
 }

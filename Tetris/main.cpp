@@ -46,6 +46,12 @@ void detectKeyboardInputWindows(Tetris *T)
         if ((GetAsyncKeyState(VK_G) & 0x01))
             T->key_g();
 
+        if ((GetAsyncKeyState(VK_Q) & 0x01))
+            T->key_q();
+
+        if ((GetAsyncKeyState(VK_C) & 0x01))
+            T->key_s();
+
         if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         {
 
@@ -65,6 +71,7 @@ void detectKeyboardInputWindows(Tetris *T)
 
 int main()
 {
+    std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
     std::cout << ASCII_LOGO;
 #if (defined (_WIN32) || defined (_WIN64))
     Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
