@@ -236,17 +236,20 @@ void Tetris::destroyLine()
 
 void Tetris::key_escape()
 {
-    isPaused = !isPaused;
+    if (isActive)
+    {
+        isPaused = !isPaused;
 
-    if (isPaused)
-    {   /* overwrite preview and game field */
-        show->update_preview(TetrominoKind::Pause);
-        show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
-    }
-    else
-    {   /* redraw scene as it was before the pause */
-        show->update_preview(nextTetromino.getKind());
-        show->draw_scene(game_field);
+        if (isPaused)
+        {   /* overwrite preview and game field */
+            show->update_preview(TetrominoKind::Pause);
+            show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
+        }
+        else
+        {   /* redraw scene as it was before the pause */
+            show->update_preview(nextTetromino.getKind());
+            show->draw_scene(game_field);
+        }
     }
 }
 
@@ -289,29 +292,43 @@ void Tetris::run()
 
 void Tetris::start()
 {
-    if (!isActive)
+
+    boost::thread keyboard_thread;
+    if (detectKeyboardInput != nullptr)
+        keyboard_thread = boost::thread(detectKeyboardInput, this);
+
+    do
     {
-        isActive = true;
+        startAnotherGame = false;
+        quit = false;
         isPaused = false;
-        entry.level = 1;
-        entry.score = 0;
-        entry.lines = 0;
-        
+        isActive = true;
+
+        show->draw_layout();
+        show->update_preview(nextTetromino.getKind());
+        show->draw_highscores(stats->get_high_scores());
+
         placeNextTetromino();
         boost::thread game_thread(boost::bind(&Tetris::run, this));
-        
-        boost::thread keyboard_thread;
-        if(detectKeyboardInput != nullptr)
-            keyboard_thread = boost::thread(detectKeyboardInput, this);
-
         game_thread.join();
-        
-        if (detectKeyboardInput != nullptr)
-        {
-            keyboard_thread.interrupt();
-            keyboard_thread.join();
-        }
 
-        isActive = false;
+        /* ***  from here : game is over *** */
+
+        // reset game state
+        game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
+        game_loop_sleep_time_ms = initial_gravity;
+        entry.level = 1; entry.lines = 0; entry.score = 0;
+
+        show->draw_game_over();
+
+        /* busy wait for user quitting or starting another game */
+        while (startAnotherGame == false && quit == false);
+
+    } while (startAnotherGame == true && quit == false);
+
+    if (detectKeyboardInput != nullptr)
+    {
+        keyboard_thread.interrupt();
+        keyboard_thread.join();
     }
 }
