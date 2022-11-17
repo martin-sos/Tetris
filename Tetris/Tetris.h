@@ -11,7 +11,7 @@ class Tetris {
 public:
     Tetris(Tetris_Draw* s, void (*f)(Tetris*) =nullptr)
         :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }))),
-        isActive(false), isPaused(false), ghosting(false), letFall(false),
+        isActive(false), isPaused(false), ghosting(false), letFall(false), startAnotherGame(false), quit(false),
         game_loop_sleep_time_ms(initial_gravity),
         show(s),
         detectKeyboardInput(f),
@@ -19,10 +19,6 @@ public:
         stats(Tetris_Statistics::get_instance()),
         nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
-        show->update_preview(nextTetromino.getKind());
-        show->draw_highscores(stats->get_high_scores());
-
-        std::srand(static_cast<unsigned>(std::time(nullptr)));
     }
 
     ~Tetris()
@@ -38,6 +34,8 @@ public:
     void key_right(){ if (isActive && !isPaused) shift(MoveTetromino::Right); }
     void key_space(){ if (isActive && !isPaused) letFall = true; }
     void key_g()    { if (isActive && !isPaused) (ghosting = !ghosting) ? updateGhost() : eraseGhost(); }
+    void key_q()    { quit = true; startAnotherGame = isActive = isPaused = false; }    // quit game
+    void key_s()    { startAnotherGame = true; quit = false; }                          // start game
     void key_escape(); 
     
 
@@ -50,6 +48,9 @@ private:
     bool isPaused;                                  // is a game paused?
     bool ghosting;                                  // is ghosting actived?
     bool letFall;                                   // if true, then let the current Tetromino fall to the very bottom
+    bool startAnotherGame;                          // if true, after a game over, another game will be started
+    bool quit;                                      // if true, game will be terminated
+
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
     Tetris_Draw * const show;
