@@ -233,7 +233,7 @@ void Tetris_Draw_Windows_Console::draw_game_over()
         WriteConsoleA(screen_buffer_handle, fill.c_str(), field_width, NULL, NULL);
         Sleep(40);
         con_coord.Y++;
-                 SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+        SetConsoleCursorPosition(screen_buffer_handle, con_coord);
     }
 
     std::string game_over_screen[field_height] = {
