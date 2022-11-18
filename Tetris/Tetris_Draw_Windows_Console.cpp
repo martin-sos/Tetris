@@ -82,7 +82,6 @@ void Tetris_Draw_Windows_Console::draw_layout()
     /* 1. draw preview label */
     std::string label("PREVIEW");
     COORD con_coord = coord_preview_label;
-
     draw(screen_buffer_handle, con_coord, (WORD)COLOR::White, label.c_str(), (DWORD)label.length());
 
     /* 2. draw stats */
@@ -251,21 +250,7 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
 
 void Tetris_Draw_Windows_Console::draw_game_over()
 {
-    std::string fill(field_width, 'X');
-
-    COORD con_coord = coord_game_field;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
-    
-    for (int i = 0; i < field_height; i++)
-    {
-        WriteConsoleA(screen_buffer_handle, fill.c_str(), field_width, NULL, NULL);
-        Sleep(40);
-        con_coord.Y++;
-        SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    }
-
-    std::string game_over_screen[field_height] = {
+    static const std::string game_over_screen[field_height] = {
         {"          "},
         {"          "},
         {"          "},
@@ -288,16 +273,22 @@ void Tetris_Draw_Windows_Console::draw_game_over()
         {"          "}
     };
 
-    con_coord = coord_game_field;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Yellow);
+    static const std::string fill(field_width, 'X');
 
+    COORD con_coord = coord_game_field; 
     for (int i = 0; i < field_height; i++)
     {
-        WriteConsoleA(screen_buffer_handle, game_over_screen[i].c_str(), (DWORD)game_over_screen[i].length(), NULL, NULL);
-        Sleep(40);
+        draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, fill.c_str(), field_width);
+        Sleep(20);
         con_coord.Y++;
-        SetConsoleCursorPosition(screen_buffer_handle, con_coord);
+    }
+
+    con_coord = coord_game_field;
+    for (int i = 0; i < field_height; i++)
+    {
+        draw(screen_buffer_handle, con_coord, (WORD)COLOR::Yellow, game_over_screen[i].c_str(), (DWORD)game_over_screen[i].length());
+        Sleep(20);
+        con_coord.Y++;
     }
 
     Sleep(1000);
