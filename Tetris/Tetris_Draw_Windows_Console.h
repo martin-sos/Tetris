@@ -43,6 +43,40 @@ private:
     static constexpr COORD coord_stats_level        = { coord_stats_lines.X, coord_stats_lines.Y + 2 };
     static constexpr COORD coord_stats_score        = { coord_stats_lines.X, coord_stats_level.Y + 2 };
     static constexpr COORD coord_stats_highscore    = { coord_stats_lines.X + 15, coord_stats_lines.Y };
+
+ /* with the coordinates above draw_layout creates a display as below
+
+
+
+                  |          |
+                  |          |
+                  |          |
+                  |          |
+                  |          |
+     PREVIEW      |    #     |       LINES: 0                    *** H I G H S C O R E S ***
+                  |   ###    |
+       ####       |          |       LEVEL: 1         Rank    |  Name    |  Lines   |  Level   |  Score
+                  |          |                      ------------------------------------------------------
+                  |          |       SCORE: 0       ..1.......|..Player 1|..142.....|..15......|..1420....
+                  |          |                      ..2.......|..Player 1|..132.....|..14......|..1320....
+                  |          |                      ..3.......|..Player 1|..106.....|..11......|..1060....
+                  |          |                      ..4.......|..Player 1|..93......|..10......|..930.....
+                  |          |                      ..5.......|..Player 1|..91......|..10......|..910.....
+                  |          |                      ..6.......|..Player 1|..78......|..4.......|..780.....
+                  |          |                      ..7.......|..Player 1|..59......|..6.......|..590.....
+                  |          |                      ..8.......|..Player 1|..58......|..6.......|..580.....
+                  |          |                      ..9.......|..Player 1|..53......|..6.......|..530.....
+                  |          |                      ..10......|..Player 1|..53......|..6.......|..530.....
+                  |          |
+                  ''''''''''''
+     CONTROLS
+     s     - start game  | esc  - pause | q - quit
+     left  - shift left  | up   - rotate clockwise
+     right - shift right | down - rotate counter-clockwise
+     space - hard drop   | g    - ghost on/off
+ */
+
+
 };
 
 
