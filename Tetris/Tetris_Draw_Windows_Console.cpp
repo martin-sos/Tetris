@@ -96,17 +96,26 @@ void Tetris_Draw_Windows_Console::update_stats(Tetris_Stats_entry stats)
 {
     SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
     
-    std::string lines = "LINES: " + std::to_string(stats.lines);
+    std::string number = std::to_string(stats.lines);
+    std::string text = "LINES: " + number;
+    std::string spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
+    text += spaces;
     SetConsoleCursorPosition(screen_buffer_handle, coord_stats_lines);
-    WriteConsoleA(screen_buffer_handle, lines.c_str(), (DWORD)lines.length(), NULL, NULL);
+    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
     
-    std::string level = "LEVEL: " + std::to_string(stats.level);
+    number = std::to_string(stats.level);
+    text = "LEVEL: " + number;
+    spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
+    text += spaces;
     SetConsoleCursorPosition(screen_buffer_handle, coord_stats_level);
-    WriteConsoleA(screen_buffer_handle, level.c_str(), (DWORD)level.length(), NULL, NULL);
+    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
 
-    std::string score = "SCORE: " + std::to_string(stats.score);
+    number = std::to_string(stats.score);
+    text = "SCORE: " + number;
+    spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
+    text += spaces;
     SetConsoleCursorPosition(screen_buffer_handle, coord_stats_score);
-    WriteConsoleA(screen_buffer_handle, score.c_str(), (DWORD)score.length(), NULL, NULL);
+    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
 }
 
 void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
