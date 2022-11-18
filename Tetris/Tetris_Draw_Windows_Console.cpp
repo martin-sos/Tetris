@@ -2,12 +2,57 @@
 
 #if (defined (_WIN32) || defined (_WIN64))
 
+constexpr COORD Tetris_Draw_Windows_Console::coord_preview_label;
+constexpr COORD Tetris_Draw_Windows_Console::coord_preview_tetromino;
+constexpr COORD Tetris_Draw_Windows_Console::coord_game_frame;
+constexpr COORD Tetris_Draw_Windows_Console::coord_game_field;
+constexpr COORD Tetris_Draw_Windows_Console::coord_controls;
+constexpr COORD Tetris_Draw_Windows_Console::coord_stats_lines;
+constexpr COORD Tetris_Draw_Windows_Console::coord_stats_level;
+constexpr COORD Tetris_Draw_Windows_Console::coord_stats_score;
+constexpr COORD Tetris_Draw_Windows_Console::coord_stats_highscore;
+
+static inline constexpr char minoToChar(const TetrominoKind mino)
+{
+    switch (mino)
+    {
+    case TetrominoKind::I:
+    case TetrominoKind::J:
+    case TetrominoKind::L:
+    case TetrominoKind::O:
+    case TetrominoKind::S:
+    case TetrominoKind::T:
+    case TetrominoKind::Z:
+    case TetrominoKind::Ghost:  return '#';
+    case TetrominoKind::Pause:  return '-';
+    case TetrominoKind::none:   return ' ';
+    default:                    return '?';
+    }
+}
+
+static inline constexpr WORD minoToColor(const TetrominoKind mino)
+{
+    switch (mino)
+    {
+    case TetrominoKind::I:      return (WORD)COLOR::Cyan;
+    case TetrominoKind::J:      return (WORD)COLOR::Blue;
+    case TetrominoKind::L:      return (WORD)COLOR::Orange;
+    case TetrominoKind::O:      return (WORD)COLOR::Yellow;
+    case TetrominoKind::S:      return (WORD)COLOR::Green;
+    case TetrominoKind::T:      return (WORD)COLOR::Magenta;
+    case TetrominoKind::Z:      return (WORD)COLOR::Red;
+    case TetrominoKind::Ghost:  return (WORD)COLOR::Gray;
+    case TetrominoKind::Pause:  return (WORD)COLOR::Gray;
+    case TetrominoKind::none:   return (WORD)COLOR::Black;
+    default:                    return (WORD)COLOR::White;
+    }
+}
+
 void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> game_field)
 {
     COORD con_coord = coord_game_field;
     for (int i = field_height - 1; i >= 0; i--)
     {
-        char buffer;
         for (int j = 0; j < field_width; j++)
         {
             Field f = game_field[i][j];
@@ -19,7 +64,7 @@ void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> gam
                 con_coord.X = coord_game_field.X + j;
                 SetConsoleCursorPosition(screen_buffer_handle, con_coord);
                 
-                buffer = minoToChar(f.mino);
+                char buffer = minoToChar(f.mino);
                 WriteConsoleA(screen_buffer_handle, &buffer, 1, NULL, NULL);
             }
         }
@@ -64,7 +109,6 @@ void Tetris_Draw_Windows_Console::draw_layout()
     std::string controls = "CONTROLS";
     SetConsoleCursorPosition(screen_buffer_handle, con_coord);
     SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
-    
     WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
 
     
