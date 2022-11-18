@@ -48,6 +48,13 @@ static inline constexpr WORD minoToColor(const TetrominoKind mino)
     }
 }
 
+static inline void draw(HANDLE scr_buf, COORD coord, WORD color, const char *c_str, DWORD length)
+{
+    SetConsoleTextAttribute(scr_buf, color);
+    SetConsoleCursorPosition(scr_buf, coord);
+    WriteConsoleA(scr_buf, c_str, length, NULL, NULL);
+}
+
 void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> game_field)
 {
     COORD con_coord = coord_game_field;
@@ -59,13 +66,9 @@ void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> gam
             if (f.mino != old_game_field[i][j].mino ) // draw only what has changed 
             {
                 WORD color = minoToColor(f.mino);
-                SetConsoleTextAttribute(screen_buffer_handle, color);
-                
                 con_coord.X = coord_game_field.X + j;
-                SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-                
                 char buffer = minoToChar(f.mino);
-                WriteConsoleA(screen_buffer_handle, &buffer, 1, NULL, NULL);
+                draw(screen_buffer_handle, con_coord, color, &buffer, 1);
             }
         }
         con_coord.Y++;
@@ -73,15 +76,14 @@ void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> gam
     old_game_field = game_field;    // saving current game field to detect changes in the next scene
 }
 
+
 void Tetris_Draw_Windows_Console::draw_layout()
 {
     /* 1. draw preview label */
     std::string label("PREVIEW");
     COORD con_coord = coord_preview_label;
 
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
-    WriteConsoleA(screen_buffer_handle, label.c_str(), (DWORD)label.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::White, label.c_str(), (DWORD)label.length());
 
     /* 2. draw stats */
     update_stats({ "", 0, 1, 0 });
@@ -107,59 +109,45 @@ void Tetris_Draw_Windows_Console::draw_layout()
     /* 4. draw controls */    
     con_coord = coord_controls;
     std::string controls = "CONTROLS";
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
-    WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
-
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::White, controls.c_str(), (DWORD)controls.length());
     
     con_coord.Y++;
     controls = "s     - start game  | esc  - pause | q - quit  ";
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
-    WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, controls.c_str(), (DWORD)controls.length());
 
     con_coord.Y++;
     controls = "left  - shift left  | up   - rotate clockwise";
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
-    WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, controls.c_str(), (DWORD)controls.length());
     
     con_coord.Y++;
     controls = "right - shift right | down - rotate counter-clockwise";
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, controls.c_str(), (DWORD)controls.length());
 
     con_coord.Y++;
     controls = "space - hard drop   | g    - ghost on/off";
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
-    WriteConsoleA(screen_buffer_handle, controls.c_str(), (DWORD)controls.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, controls.c_str(), (DWORD)controls.length());
 }
 
 void Tetris_Draw_Windows_Console::update_stats(Tetris_Stats_entry stats)
 {
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::White);
     
     std::string number = std::to_string(stats.lines);
     std::string text = "LINES: " + number;
     std::string spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    SetConsoleCursorPosition(screen_buffer_handle, coord_stats_lines);
-    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
+    draw(screen_buffer_handle, coord_stats_lines, (WORD)COLOR::White, text.c_str(), (DWORD)text.length());
     
     number = std::to_string(stats.level);
     text = "LEVEL: " + number;
     spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    SetConsoleCursorPosition(screen_buffer_handle, coord_stats_level);
-    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
+    draw(screen_buffer_handle, coord_stats_level, (WORD)COLOR::White, text.c_str(), (DWORD)text.length());
 
     number = std::to_string(stats.score);
     text = "SCORE: " + number;
     spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    SetConsoleCursorPosition(screen_buffer_handle, coord_stats_score);
-    WriteConsoleA(screen_buffer_handle, text.c_str(), (DWORD)text.length(), NULL, NULL);
+    draw(screen_buffer_handle, coord_stats_score, (WORD)COLOR::White, text.c_str(), (DWORD)text.length());
 }
 
 void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
@@ -181,15 +169,11 @@ void Tetris_Draw_Windows_Console::update_preview(TetrominoKind kind)
     }
 
     WORD color = minoToColor(kind);
-    SetConsoleTextAttribute(screen_buffer_handle, color);
-
     COORD con_coord = coord_preview_tetromino;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, t[0].c_str(), (DWORD)t[0].length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, color, t[0].c_str(), (DWORD)t[0].length());
 
     con_coord.Y++;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, t[1].c_str(), (DWORD)t[1].length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, color, t[1].c_str(), (DWORD)t[1].length());
 }
 
 void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry> stats)
@@ -223,28 +207,22 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
     std::string title_dash(title_row.length(), '-');
 
     // print title
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Yellow);
     COORD con_coord = coord_stats_highscore;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, highscores.c_str(), (DWORD)highscores.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Yellow, highscores.c_str(), (DWORD)highscores.length());
 
     // print row names 
-    SetConsoleTextAttribute(screen_buffer_handle, (WORD)COLOR::Gray);
     con_coord.Y += 2;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, title_row.c_str(), (DWORD)title_row.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, title_row.c_str(), (DWORD)title_row.length());
 
     // print dash
     con_coord.Y++;
-    SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-    WriteConsoleA(screen_buffer_handle, title_dash.c_str(), (DWORD)title_dash.length(), NULL, NULL);
+    draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, title_dash.c_str(), (DWORD)title_dash.length());
 
-   
     // print highscores
     for (int i = 0; i < stats.size(); i++)
     { 
         std::string row_entry = "";
-        std::string fill = "";
+        std::string fill;
         
         rank = std::to_string(i + 1);
         fill = std::string(col_width - rank.length() - 1, '.');
@@ -267,10 +245,8 @@ void Tetris_Draw_Windows_Console::draw_highscores(std::vector<Tetris_Stats_entry
         row_entry += ".." + score + fill;
 
         con_coord.Y++;
-        SetConsoleCursorPosition(screen_buffer_handle, con_coord);
-        WriteConsoleA(screen_buffer_handle, row_entry.c_str(), (DWORD)row_entry.length(), NULL, NULL);
+        draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, row_entry.c_str(), (DWORD)row_entry.length());
     }
-
 }
 
 void Tetris_Draw_Windows_Console::draw_game_over()
