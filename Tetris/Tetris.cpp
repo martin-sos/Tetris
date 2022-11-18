@@ -308,6 +308,7 @@ void Tetris::start()
         {
             show->draw_layout();
             show->update_preview(nextTetromino.getKind());
+            show->update_stats(entry);
             show->draw_highscores(stats->get_high_scores());
 
             placeNextTetromino();
