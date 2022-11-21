@@ -103,7 +103,7 @@ private:
     void (* const detectKeyboardInput)(Tetris*);   // pointer to user defined function which detects keyboard input
 
     Tetris_Stats_entry entry;
-    Tetris_Statistics &stats;
+    Tetris_Statistics& stats;
     
     Tetromino nextTetromino;                        // the TetrominoKind which is added next to the game field
     Tetromino currentTetromino;                     // the Tetromnino which is currently falling
