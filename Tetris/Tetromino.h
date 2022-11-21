@@ -6,12 +6,21 @@
 #include <queue>
 
 class Tetromino {
+public:
+    static Tetromino getTetromino();
+
+    void shiftTetromino(MoveTetromino direction);
+    void rotateTetromino(RotateTetromino direction);
+
+    std::vector<std::pair<int, int>> getLocation(void) { return location; }
+    TetrominoKind getKind(void ) { return kind; }
+
 private:
     enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };
     TetrominoKind kind;
     TetrominoOrientation orientation;
     std::vector<std::pair<int, int>> location;
-    static std::queue<Tetromino> bag_of_seven;
+    static std::queue<TetrominoKind> bag_of_seven;
 
     Tetromino(TetrominoKind k)
         :kind(k),
@@ -30,15 +39,6 @@ private:
     void rotateS(RotateTetromino direction);
     void rotateT(RotateTetromino direction);
     void rotateZ(RotateTetromino direction);
-
-public:
-    static Tetromino getTetromino();
-    
-    void shiftTetromino(MoveTetromino direction);
-    void rotateTetromino(RotateTetromino direction);
-
-    std::vector<std::pair<int, int>> getLocation(void);
-    TetrominoKind getKind() { return kind; }
 };
 
 #endif // _TETROMINO_H_
