@@ -8,8 +8,25 @@
 
 class Tetris_Statistics
 {
+public:
+
+    static Tetris_Statistics& get_instance()
+    {
+        static Tetris_Statistics singleton;
+        return singleton;
+    }
+
+    Tetris_Statistics(const Tetris_Statistics&) = delete;
+    Tetris_Statistics(Tetris_Statistics&&) = delete;
+    Tetris_Statistics& operator=(const Tetris_Statistics&) = delete;
+    Tetris_Statistics& operator=(Tetris_Statistics&&) = delete;
+
+
+    void add_stats(Tetris_Stats_entry);
+    std::vector<Tetris_Stats_entry> get_high_scores(void);
+
+
 private:
-    static Tetris_Statistics *singleton;
     sqlite3 *db;
 
     void init();
@@ -35,28 +52,15 @@ private:
         }
     }
 
-public:
-   
-    static Tetris_Statistics* get_instance()
-    {
-        if (!singleton)
-            singleton = new Tetris_Statistics();
-        
-        return singleton;
-    }
-
     ~Tetris_Statistics()
     {
         int rc = sqlite3_close_v2(db);
-        
+
         if (rc == SQLITE_OK)
             std::cout << "\nConnection to database closed... " << std::endl;
         else
             std::cout << "\nError: failed to close connection to database, error code: " << rc << std::endl;
     }
-
-    void add_stats(Tetris_Stats_entry);
-    std::vector<Tetris_Stats_entry> get_high_scores(void);
 };
 
 #endif // !_TETRIS_STATISTICS_H

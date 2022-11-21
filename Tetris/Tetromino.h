@@ -10,12 +10,13 @@ private:
     enum class TetrominoOrientation { Zero, Ninety, OneEighty, TwoSeventy };
     TetrominoKind kind;
     TetrominoOrientation orientation;
-    std::pair<int, int> location[maxMinos];
+    std::vector<std::pair<int, int>> location;
     static std::queue<Tetromino> bag_of_seven;
 
     Tetromino(TetrominoKind k) {
         kind = k;
         orientation = TetrominoOrientation::Zero;
+        location = std::vector <std::pair<int, int>>(maxMinos, std::pair<int, int>(0, 0));
         setInitiallocation(kind);
     }
 
@@ -35,7 +36,7 @@ public:
     void shiftTetromino(MoveTetromino direction);
     void rotateTetromino(RotateTetromino direction);
 
-    std::pair<int, int>* getLocation(void);
+    std::vector<std::pair<int, int>> getLocation(void);
     TetrominoKind getKind() { return kind; }
 };
 

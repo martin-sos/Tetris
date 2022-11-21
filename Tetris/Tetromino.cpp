@@ -39,7 +39,7 @@ Tetromino Tetromino::getTetromino()
     return next;
 }
 
-std::pair<int, int>* Tetromino::getLocation(void)
+std::vector<std::pair<int, int>> Tetromino::getLocation(void)
 {
     return location;
 }

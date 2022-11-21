@@ -9,7 +9,7 @@
 
 class Tetris {
 public:
-    Tetris(Tetris_Draw* s, void (*f)(Tetris*) =nullptr)
+    Tetris(Tetris_Draw& s, void (*f)(Tetris*) =nullptr)
         :game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }))),
         game_state(Tetris_State::idle),
         ghosting(false), letFall(false),
@@ -20,11 +20,6 @@ public:
         stats(Tetris_Statistics::get_instance()),
         nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
-    }
-
-    ~Tetris()
-    {
-        delete stats;
     }
 
     void start();   // starts a Tetris game, spawns all needed threads, terminates as soon as game is over
@@ -104,11 +99,11 @@ private:
 
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
-    Tetris_Draw * const show;
-    void (* const detectKeyboardInput)(Tetris *);   // pointer to user defined function which detects keyboard input
+    Tetris_Draw& show;
+    void (* const detectKeyboardInput)(Tetris*);   // pointer to user defined function which detects keyboard input
 
     Tetris_Stats_entry entry;
-    Tetris_Statistics *stats;
+    Tetris_Statistics &stats;
     
     Tetromino nextTetromino;                        // the TetrominoKind which is added next to the game field
     Tetromino currentTetromino;                     // the Tetromnino which is currently falling
