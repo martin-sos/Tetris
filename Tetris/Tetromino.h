@@ -13,10 +13,11 @@ private:
     std::vector<std::pair<int, int>> location;
     static std::queue<Tetromino> bag_of_seven;
 
-    Tetromino(TetrominoKind k) {
-        kind = k;
-        orientation = TetrominoOrientation::Zero;
-        location = std::vector <std::pair<int, int>>(maxMinos, std::pair<int, int>(0, 0));
+    Tetromino(TetrominoKind k)
+        :kind(k),
+        orientation(orientation = TetrominoOrientation::Zero),
+        location(std::vector <std::pair<int, int>>(maxMinos, std::pair<int, int>(0, 0)))
+    {
         setInitiallocation(kind);
     }
 
