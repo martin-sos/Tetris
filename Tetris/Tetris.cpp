@@ -11,12 +11,12 @@ void Tetris::placeNextTetromino()
     ghost = currentTetromino = nextTetromino;
     placeCurrentTetromino();
     nextTetromino = Tetromino::getTetromino();
-    show->update_preview(nextTetromino.getKind());
+    show.update_preview(nextTetromino.getKind());
 }
 
 void Tetris::placeCurrentTetromino()
 {
-    std::pair<int, int>* location = static_cast<std::pair<int, int>*>(currentTetromino.getLocation());
+    std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
     TetrominoKind kind = currentTetromino.getKind();
 
     for (int i = 0; i < maxMinos; i++)
@@ -34,9 +34,9 @@ void Tetris::placeCurrentTetromino()
 
     if (game_state == Tetris_State::game_over)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
-        show->draw_scene(game_field);
-        stats->add_stats(entry);
-        show->draw_highscores(stats->get_high_scores());
+        show.draw_scene(game_field);
+        stats.add_stats(entry);
+        show.draw_highscores(stats.get_high_scores());
     }
     
 }
@@ -47,7 +47,7 @@ void Tetris::rotate(const RotateTetromino direction)
 
     bool validRotation = true;
     testTetromino.rotateTetromino(direction);
-    const std::pair<int, int>* location = testTetromino.getLocation();
+    std::vector<std::pair<int, int>> location = testTetromino.getLocation();
     for (int i = 0; i < maxMinos; i++)
     {
         /* does it hit the walls, which actually means, is it out of bounds? */
@@ -95,7 +95,7 @@ bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
     }
 
     /* 1. locate the falling Tetromino */
-    std::pair<int, int>* location = t.getLocation();
+    std::vector<std::pair<int, int>> location = t.getLocation();
 
     /* 2. check if it can move by (x,y) */
     bool canMove = true;
@@ -122,7 +122,7 @@ bool Tetris::shift(const MoveTetromino direction)
     /* 1. check if move is possible */
     bool canMove = tryShift(direction, currentTetromino);
 
-    std::pair<int, int>* location = currentTetromino.getLocation();
+    std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
 
     /* 2. if it can move, move it */
     if (canMove)
@@ -165,7 +165,7 @@ void Tetris::updateGhost()
         }
 
         /* 3. place the ghost */
-        const std::pair<int, int>* location = ghost.getLocation();
+        std::vector<std::pair<int, int>> location = ghost.getLocation();
         for (int i = 0; i < maxMinos; i++)
         {
             // but do not overwrite the current Tetromino when it just landed
@@ -177,7 +177,7 @@ void Tetris::updateGhost()
 
 void Tetris::eraseGhost()
 {
-    const std::pair<int, int>* location = ghost.getLocation();
+    std::vector<std::pair<int, int>> location = ghost.getLocation();
 
     /* reset previous ghost */
     for (int i = 0; i < maxMinos; i++)
@@ -241,15 +241,15 @@ void Tetris::key_escape()
     {
         game_state = Tetris_State::pause;
         /* overwrite preview and game field */
-        show->update_preview(TetrominoKind::Pause);
-        show->draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
+        show.update_preview(TetrominoKind::Pause);
+        show.draw_scene(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::Pause, false })));
     }
     else if (game_state == Tetris_State::pause)
     {
         game_state = Tetris_State::playing;
         /* redraw scene as it was before the pause */
-        show->update_preview(nextTetromino.getKind());
-        show->draw_scene(game_field);
+        show.update_preview(nextTetromino.getKind());
+        show.draw_scene(game_field);
     }
     else
     {
@@ -284,11 +284,11 @@ void Tetris::run()
                 if(could_fall == false)         // if the very bottom has been reached
                 {
                     destroyLine();
-                    show->update_stats(entry);
+                    show.update_stats(entry);
                     placeNextTetromino();
                 }
             }
-            show->draw_scene(game_field);       
+            show.draw_scene(game_field);       
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
@@ -306,10 +306,10 @@ void Tetris::start()
 
         do
         {
-            show->draw_layout();
-            show->update_preview(nextTetromino.getKind());
-            show->update_stats(entry);
-            show->draw_highscores(stats->get_high_scores());
+            show.draw_layout();
+            show.update_preview(nextTetromino.getKind());
+            show.update_stats(entry);
+            show.draw_highscores(stats.get_high_scores());
 
             placeNextTetromino();
             boost::thread game_thread(boost::bind(&Tetris::run, this));
@@ -322,7 +322,7 @@ void Tetris::start()
             game_loop_sleep_time_ms = initial_gravity;
             entry.level = 1; entry.lines = 0; entry.score = 0;
 
-            show->draw_game_over();
+            show.draw_game_over();
 
             /* busy wait for user quitting or starting another game */
             while (game_state == Tetris_State::game_over);

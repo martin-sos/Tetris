@@ -24,7 +24,7 @@ std::string ASCII_LOGO = R"(
 
 
 #if (defined (_WIN32) || defined (_WIN64))
-void detectKeyboardInputWindows(Tetris *T)
+void detectKeyboardInputWindows(Tetris* T)
 {
     while (1)
     {
@@ -75,13 +75,13 @@ int main()
     std::cout << ASCII_LOGO;
 #if (defined (_WIN32) || defined (_WIN64))
     Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
-    void (*keyboard_input)(Tetris * Tetris_object) = detectKeyboardInputWindows;
+    void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
 #elif (defined LINUX) || defined (__linux__))
     Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
-    void (*func)(Tetris * Tetris_object) = nullptr;
+    void (*func)(Tetris* Tetris_object) = nullptr;
 #endif
 
-    Tetris T = Tetris(&show, keyboard_input);
+    Tetris T = Tetris(show, keyboard_input);
     T.start();
    
     

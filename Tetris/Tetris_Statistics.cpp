@@ -1,8 +1,6 @@
 #include "Tetris_Statistics.h"
 #include <string>
 
-Tetris_Statistics* Tetris_Statistics::singleton = nullptr;
-
 void Tetris_Statistics::init()
 {
     std::string sql_stmt = "CREATE TABLE game(ID INTEGER UNIQUE, Name TEXT, Lines INTEGER, Level INTEGER, Score INTEGER)";
