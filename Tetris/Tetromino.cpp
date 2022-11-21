@@ -34,9 +34,9 @@ Tetromino Tetromino::getTetromino()
         }
     }
 
-    Tetromino next = Tetromino(Tetromino::bag_of_seven.front());
+    TetrominoKind next = Tetromino::bag_of_seven.front();
     Tetromino::bag_of_seven.pop();
-    return next;
+    return Tetromino(next);
 }
 
 void Tetromino::shiftTetromino(MoveTetromino direction)
