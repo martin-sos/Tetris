@@ -78,7 +78,7 @@ int main()
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
 #elif (defined LINUX) || defined (__linux__))
     Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
-    void (*func)(Tetris * Tetris_object) = nullptr;
+    void (*func)(Tetris* Tetris_object) = nullptr;
 #endif
 
     Tetris T = Tetris(show, keyboard_input);
