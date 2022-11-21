@@ -3,7 +3,7 @@
 #include "Tetromino.h"
 
 
-std::queue<Tetromino> Tetromino::bag_of_seven;
+std::queue<TetrominoKind> Tetromino::bag_of_seven;
 
 Tetromino Tetromino::getTetromino()
 {
@@ -28,20 +28,15 @@ Tetromino Tetromino::getTetromino()
         while (i > 0)
         {
             int random_index = (std::rand() % i);
-            Tetromino::bag_of_seven.push(Tetromino(choose_from[random_index]));
+            Tetromino::bag_of_seven.push(choose_from[random_index]);
             choose_from.erase(choose_from.begin() + random_index);
             i--;
         }
     }
 
-    Tetromino next = Tetromino::bag_of_seven.front();
+    TetrominoKind next = Tetromino::bag_of_seven.front();
     Tetromino::bag_of_seven.pop();
-    return next;
-}
-
-std::vector<std::pair<int, int>> Tetromino::getLocation(void)
-{
-    return location;
+    return Tetromino(next);
 }
 
 void Tetromino::shiftTetromino(MoveTetromino direction)
