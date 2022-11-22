@@ -4,6 +4,7 @@
 #include <boost/thread.hpp>
 #include "Tetris.h"
 
+std::mutex m;
 
 void Tetris::placeNextTetromino()
 {
@@ -43,6 +44,7 @@ void Tetris::placeCurrentTetromino()
 
 void Tetris::rotate(const RotateTetromino direction)
 {
+    std::lock_guard<std::mutex> lockGuard(m);
     Tetromino testTetromino = currentTetromino; // test a rotation on a copy, only if successfull, execute it
 
     bool validRotation = true;
@@ -119,9 +121,10 @@ bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
 
 bool Tetris::shift(const MoveTetromino direction)
 {
+    std::lock_guard<std::mutex> lockGuard(m);
+    
     /* 1. check if move is possible */
     bool canMove = tryShift(direction, currentTetromino);
-
     std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
 
     /* 2. if it can move, move it */
@@ -144,7 +147,6 @@ bool Tetris::shift(const MoveTetromino direction)
             game_field[row][col].occupied = true;
         }
     }
-
     return canMove;
 }
 
@@ -211,14 +213,8 @@ void Tetris::destroyLine()
             // move down each row above by one
             for (int k = i + 1; k < field_height; k++)
             {
-                for (int j = 0; j < field_width; j++)
-                {
-                    if (game_field[k][j].occupied)
-                    {
-                        game_field[k - 1][j] = game_field[k][j];
-                        game_field[k][j] = { TetrominoKind::none, false };
-                    }
-                }
+                game_field[k - 1] = game_field[k];
+                game_field[k] = std::vector<Field>(field_width, { TetrominoKind::none, false });
             }
             i--; // row i is now a new row and needs to be checked again
         }
@@ -274,21 +270,26 @@ void Tetris::run()
             {
                 start_time = end_time;
                 bool could_fall = false;
+                
                 do {
                     could_fall = fall();        // every period tetris_sleep_period_ms let the stone fall
                     letFall &= could_fall;
                 } while (letFall);              // if space has been pressed, let the current Tetromino fall to the very bottom
-
+               
                 letFall = false;
                 
                 if(could_fall == false)         // if the very bottom has been reached
                 {
+                    std::lock_guard<std::mutex> lockGuard(m);
                     destroyLine();
                     show.update_stats(entry);
                     placeNextTetromino();
                 }
+                
             }
+           
             show.draw_scene(game_field);       
+           
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
@@ -300,7 +301,10 @@ void Tetris::start()
     {
         boost::thread keyboard_thread;
         if (detectKeyboardInput != nullptr)
+        {
             keyboard_thread = boost::thread(detectKeyboardInput, this);
+            std::cout << "Keyboard_thread id: " << keyboard_thread.get_id() << std::endl;
+        }
 
         game_state = Tetris_State::playing;
 
@@ -313,6 +317,7 @@ void Tetris::start()
 
             placeNextTetromino();
             boost::thread game_thread(boost::bind(&Tetris::run, this));
+            std::cout << "game_thread id: " << game_thread.get_id() << std::endl;
             game_thread.join();
 
             /* ***  from here : game is over *** */

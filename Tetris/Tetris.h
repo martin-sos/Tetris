@@ -100,7 +100,7 @@ private:
     int game_loop_sleep_time_ms;                    // sleep time in ms for the main game loop, determines how quickly Tetrominos are falling
 
     Tetris_Draw& show;
-    void (* const detectKeyboardInput)(Tetris*);   // pointer to user defined function which detects keyboard input
+    void (* const detectKeyboardInput)(Tetris*);    // pointer to user defined function which detects keyboard input
 
     Tetris_Stats_entry entry;
     Tetris_Statistics& stats;
@@ -109,18 +109,16 @@ private:
     Tetromino currentTetromino;                     // the Tetromnino which is currently falling
     Tetromino ghost;                                // a projection of the current Tetromino at the location where the current Tetromino would land 
 
-    void run();                                     // executes the Tetris game loop; is exectued in a thread
-    
-    bool fall();                                    // lets minos fall down one more line, if there is nothing that could fall, return false, otherwise true
-    bool shift(const MoveTetromino);                // ...
-    void updateGhost();
-    void eraseGhost();
-    bool tryShift(const MoveTetromino, Tetromino) const;  // ...
-    void rotate(const RotateTetromino);             // rotate a TetrominoKind Left or Right
-    
-    void destroyLine(void);                         // detects a full line, destroys it and will let everything above fall down one more line
-    void placeNextTetromino(void);                  // sets nextTetromino at the top of the game field and creates a new Tetromino
-    void placeCurrentTetromino(void);
+    void run();                                             // executes the Tetris game loop; is exectued in a thread
+    bool fall();                                            // lets minos fall down one more line, if there is nothing that could fall, return false, otherwise true
+    bool shift(const MoveTetromino);                        // shifts / moves the Tetromino in the asked direction, return true if successful, otherwise false
+    bool tryShift(const MoveTetromino, Tetromino) const;    // tests if a shift of a given Tetromino and a given direction is possible
+    void rotate(const RotateTetromino);                     // rotate a TetrominoKind Left or Right
+    void updateGhost();                                     // set the ghost stone into the game field
+    void eraseGhost();                                      // removes the ghost stone from the game field
+    void destroyLine(void);                                 // detects a full lines, destroy them and will let line above fall down accordingly
+    void placeNextTetromino(void);                          // sets nextTetromino at the top of the game field and loads the next Tetromino
+    void placeCurrentTetromino(void);                       // after a rotation or shift, updates the game field according to the position of the currentTetromino
 };
 
 #endif // _TETRIS_H_
