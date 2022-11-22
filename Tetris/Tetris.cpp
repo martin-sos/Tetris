@@ -272,10 +272,10 @@ void Tetris::run()
                 bool could_fall = false;
                 
                 do {
-                    could_fall = fall();        // every period tetris_sleep_period_ms let the stone fall
+                    could_fall = fall();        // every tetris_sleep_period_ms let the stone fall
                     letFall &= could_fall;
                 } while (letFall);              // if space has been pressed, let the current Tetromino fall to the very bottom
-               
+                
                 letFall = false;
                 
                 if(could_fall == false)         // if the very bottom has been reached
@@ -285,11 +285,8 @@ void Tetris::run()
                     show.update_stats(entry);
                     placeNextTetromino();
                 }
-                
             }
-           
             show.draw_scene(game_field);       
-           
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
@@ -301,10 +298,7 @@ void Tetris::start()
     {
         boost::thread keyboard_thread;
         if (detectKeyboardInput != nullptr)
-        {
             keyboard_thread = boost::thread(detectKeyboardInput, this);
-            std::cout << "Keyboard_thread id: " << keyboard_thread.get_id() << std::endl;
-        }
 
         game_state = Tetris_State::playing;
 
@@ -317,7 +311,6 @@ void Tetris::start()
 
             placeNextTetromino();
             boost::thread game_thread(boost::bind(&Tetris::run, this));
-            std::cout << "game_thread id: " << game_thread.get_id() << std::endl;
             game_thread.join();
 
             /* ***  from here : game is over *** */
@@ -329,7 +322,7 @@ void Tetris::start()
 
             show.draw_game_over();
 
-            /* busy wait for user quitting or starting another game */
+            // busy wait for user quitting or starting another game
             while (game_state == Tetris_State::game_over);
 
         } while (game_state == Tetris_State::playing);
