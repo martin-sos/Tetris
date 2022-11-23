@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <mutex>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 #include "Tetris.h"
@@ -25,12 +26,12 @@ void Tetris::placeCurrentTetromino()
         // detect game over
         if (game_field[location[i].first][location[i].second].occupied)
             game_state = Tetris_State::game_over;
-        
+
         // place the next stone anyway
         game_field[location[i].first][location[i].second] = { kind, false };
     }
 
-    // as the position of the current tetromino is now determined, the position of its ghost can be determined as well 
+    // as the position of the current tetromino is now determined, the position of its ghost can be determined as well
     updateGhost();
 
     if (game_state == Tetris_State::game_over)
@@ -39,7 +40,7 @@ void Tetris::placeCurrentTetromino()
         stats.add_stats(entry);
         show.draw_highscores(stats.get_high_scores());
     }
-    
+
 }
 
 void Tetris::rotate(const RotateTetromino direction)
@@ -83,7 +84,7 @@ void Tetris::rotate(const RotateTetromino direction)
 
 bool Tetris::fall()
 {
-    return shift(MoveTetromino::Down);    
+    return shift(MoveTetromino::Down);
 }
 
 bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
@@ -122,7 +123,7 @@ bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
 bool Tetris::shift(const MoveTetromino direction)
 {
     std::lock_guard<std::mutex> lockGuard(m);
-    
+
     /* 1. check if move is possible */
     bool canMove = tryShift(direction, currentTetromino);
     std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
@@ -153,7 +154,7 @@ bool Tetris::shift(const MoveTetromino direction)
 void Tetris::updateGhost()
 {
     if (ghosting)
-    {  
+    {
         /* 1. reset previous ghost */
         eraseGhost();
 
@@ -224,7 +225,7 @@ void Tetris::destroyLine()
     {
         if (entry.lines / level_up == entry.level)
         {   // after clearing another 10 lines...
-            entry.level++; // ...level-up 
+            entry.level++; // ...level-up
             game_loop_sleep_time_ms -= gravity_reduction ; // ..reduce sleep time by gravity constant, and hence speed up the game
         }
     }
@@ -258,7 +259,7 @@ void Tetris::run()
     auto start_time = std::chrono::high_resolution_clock::now();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
-    
+
     /* main game loop */
     while (game_state == Tetris_State::playing || game_state == Tetris_State::pause)
     {
@@ -270,14 +271,14 @@ void Tetris::run()
             {
                 start_time = end_time;
                 bool could_fall = false;
-                
+
                 do {
                     could_fall = fall();        // every tetris_sleep_period_ms let the stone fall
                     letFall &= could_fall;
                 } while (letFall);              // if space has been pressed, let the current Tetromino fall to the very bottom
-                
+
                 letFall = false;
-                
+
                 if(could_fall == false)         // if the very bottom has been reached
                 {
                     std::lock_guard<std::mutex> lockGuard(m);
@@ -286,7 +287,7 @@ void Tetris::run()
                     placeNextTetromino();
                 }
             }
-            show.draw_scene(game_field);       
+            show.draw_scene(game_field);
         }
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
