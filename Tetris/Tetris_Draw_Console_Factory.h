@@ -17,7 +17,7 @@ public:
     #ifdef __unix__
         return std::unique_ptr<Tetris_Draw>(new Tetris_Draw_Linux_Console());
     #elif (defined (_WIN32) || defined (_WIN64))
-        return std::unique_ptr<Tetris_Draw>(return new etris_Draw_Windows_Console());
+        return std::unique_ptr<Tetris_Draw>(new Tetris_Draw_Windows_Console());
     #endif
     }
 };
