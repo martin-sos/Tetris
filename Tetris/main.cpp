@@ -64,11 +64,14 @@ int main()
     std::unique_ptr<Tetris_Draw> show = Tetris_Draw_Console_Factory::create();
     Tetris T = Tetris(*show, keyboard_input);
 
+#ifdef __unix__
     boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, *((Tetris_Draw_Linux_Console*)show.get()), &T) );
-
+#endif
     T.start();
+
+#ifdef __unix__
     keyboard_thread.interrupt();
     keyboard_thread.join();
-
+#endif
     return 0;
 }
