@@ -86,11 +86,16 @@ int main()
 #elif ((defined LINUX) || defined (__linux__))
     Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
+
 #endif
 
     Tetris T = Tetris(show, keyboard_input);
-    T.start();
 
+    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, show, &T) );
+
+    T.start();
+    keyboard_thread.interrupt();
+    keyboard_thread.join();
 
     return 0;
 }

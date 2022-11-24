@@ -1,4 +1,5 @@
 #include "Tetris_Draw_Linux_Console.h"
+#include <boost/thread.hpp>
 #define LINUX
 #if ((defined LINUX) || defined (__linux__))
 
@@ -49,13 +50,13 @@ static inline constexpr short minoToColor(const TetrominoKind mino)
     }
 }
 
-static inline void draw(COORD coord, short color, const char *c_str, int n)
+static inline void draw(WINDOW* win, COORD coord, short color, const char *c_str, int n)
 {
-    move(coord.Y, coord.X);
-    attron(COLOR_PAIR(color));
-    addnstr(c_str, n);
-    attroff(COLOR_PAIR(color));
-    refresh();
+    wmove(win, coord.Y, coord.X);
+    wattron(win, COLOR_PAIR(color));
+    waddnstr(win, c_str, n);
+    wattroff(win, COLOR_PAIR(color));
+    wrefresh(win);
 }
 
 void Tetris_Draw_Linux_Console::draw_scene(std::vector<std::vector<Field>> game_field)
@@ -72,7 +73,7 @@ void Tetris_Draw_Linux_Console::draw_scene(std::vector<std::vector<Field>> game_
                 short color = minoToColor(f.mino);
                 con_coord.X = coord_game_field.X + j;
                 char buffer = minoToChar(f.mino);
-                draw(con_coord, color, &buffer, 1);
+                draw(win, con_coord, color, &buffer, 1);
             }
         }
         con_coord.Y++;
@@ -85,7 +86,7 @@ void Tetris_Draw_Linux_Console::draw_layout()
     /* 1. draw preview label */
     std::string label("PREVIEW");
     COORD con_coord = coord_preview_label;
-    draw(con_coord, (short)COLOR::White, label.c_str(), (int)label.length());
+    draw(win, con_coord, (short)COLOR::White, label.c_str(), (int)label.length());
 
     /* 2. draw stats */
     update_stats({ "", 0, 1, 0 });
@@ -93,41 +94,41 @@ void Tetris_Draw_Linux_Console::draw_layout()
     /* 3. draw game field */
     std::string field(field_width, ' ');
     con_coord = coord_game_frame;
-    move(con_coord.Y, con_coord.X);
-    attron(COLOR_PAIR((short)COLOR::White));
+    wmove(win, con_coord.Y, con_coord.X);
+    wattron(win, COLOR_PAIR((short)COLOR::White));
     for (int i = 0; i < field_height; i++)
     {
-        addch('|');
-        addnstr(field.c_str(), field_width);  // TODO: this could be a move
-        addch('|');
+        waddch(win, '|');
+        waddnstr(win, field.c_str(), field_width);  // TODO: this could be a move
+        waddch(win, '|');
         con_coord.Y++;
-        move(con_coord.Y, con_coord.X);
+        wmove(win, con_coord.Y, con_coord.X);
     }
-    attroff(COLOR_PAIR((short)COLOR::White));
+    wattroff(win, COLOR_PAIR((short)COLOR::White));
 
     field = std::string(field_width + 2, '\'');
-    draw(con_coord, (short)COLOR::White, field.c_str(), (int)field.length());
+    draw(win, con_coord, (short)COLOR::White, field.c_str(), (int)field.length());
 
     /* 4. draw controls */
     con_coord = coord_controls;
     std::string controls = "CONTROLS";
-    draw(con_coord, (short)COLOR::White, controls.c_str(), (int)controls.length());
+    draw(win, con_coord, (short)COLOR::White, controls.c_str(), (int)controls.length());
 
     con_coord.Y++;
     controls = "s     - start game  | esc  - pause | q - quit  ";
-    draw(con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
+    draw(win, con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
 
     con_coord.Y++;
     controls = "left  - shift left  | up   - rotate clockwise";
-    draw(con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
+    draw(win, con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
 
     con_coord.Y++;
     controls = "right - shift right | down - rotate counter-clockwise";
-    draw(con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
+    draw(win, con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
 
     con_coord.Y++;
     controls = "space - hard drop   | g    - ghost on/off";
-    draw(con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
+    draw(win, con_coord, (short)COLOR::Gray, controls.c_str(), (int)controls.length());
 }
 
 void Tetris_Draw_Linux_Console::update_stats(Tetris_Stats_entry stats)
@@ -136,19 +137,19 @@ void Tetris_Draw_Linux_Console::update_stats(Tetris_Stats_entry stats)
     std::string text = "LINES: " + number;
     std::string spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    draw(coord_stats_lines, (short)COLOR::White, text.c_str(), (int)text.length());
+    draw(win, coord_stats_lines, (short)COLOR::White, text.c_str(), (int)text.length());
 
     number = std::to_string(stats.level);
     text = "LEVEL: " + number;
     spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    draw(coord_stats_level, (short)COLOR::White, text.c_str(), (int)text.length());
+    draw(win, coord_stats_level, (short)COLOR::White, text.c_str(), (int)text.length());
 
     number = std::to_string(stats.score);
     text = "SCORE: " + number;
     spaces = std::string(coord_stats_highscore.X - coord_stats_lines.X - text.length(), ' ');
     text += spaces;
-    draw(coord_stats_score, (short)COLOR::White, text.c_str(), (int)text.length());
+    draw(win, coord_stats_score, (short)COLOR::White, text.c_str(), (int)text.length());
 }
 
 void Tetris_Draw_Linux_Console::update_preview(TetrominoKind kind)
@@ -171,10 +172,10 @@ void Tetris_Draw_Linux_Console::update_preview(TetrominoKind kind)
 
     short color = minoToColor(kind);
     COORD con_coord = coord_preview_tetromino;
-    draw(con_coord, color, t[0].c_str(), (int)t[0].length());
+    draw(win, con_coord, color, t[0].c_str(), (int)t[0].length());
 
     con_coord.Y++;
-    draw(con_coord, color, t[1].c_str(), (int)t[1].length());
+    draw(win, con_coord, color, t[1].c_str(), (int)t[1].length());
 }
 
 void Tetris_Draw_Linux_Console::draw_highscores(std::vector<Tetris_Stats_entry> stats)
@@ -209,15 +210,15 @@ void Tetris_Draw_Linux_Console::draw_highscores(std::vector<Tetris_Stats_entry> 
 
     // print title
     COORD con_coord = coord_stats_highscore;
-    draw(con_coord, (short)COLOR::Yellow, highscores.c_str(), (int)highscores.length());
+    draw(win, con_coord, (short)COLOR::Yellow, highscores.c_str(), (int)highscores.length());
 
     // print row names
     con_coord.Y += 2;
-    draw(con_coord, (short)COLOR::Gray, title_row.c_str(), (int)title_row.length());
+    draw(win, con_coord, (short)COLOR::Gray, title_row.c_str(), (int)title_row.length());
 
     // print dash
     con_coord.Y++;
-    draw(con_coord, (short)COLOR::Gray, title_dash.c_str(), (int)title_dash.length());
+    draw(win, con_coord, (short)COLOR::Gray, title_dash.c_str(), (int)title_dash.length());
 
     // print highscores
     for (int i = 0; i < stats.size(); i++)
@@ -246,7 +247,7 @@ void Tetris_Draw_Linux_Console::draw_highscores(std::vector<Tetris_Stats_entry> 
         row_entry += ".." + score + fill;
 
         con_coord.Y++;
-        draw(con_coord, (short)COLOR::Gray, row_entry.c_str(), (int)row_entry.length());
+        draw(win, con_coord, (short)COLOR::Gray, row_entry.c_str(), (int)row_entry.length());
     }
 }
 
@@ -280,7 +281,7 @@ void Tetris_Draw_Linux_Console::draw_game_over()
     COORD con_coord = coord_game_field;
     for (int i = 0; i < field_height; i++)
     {
-        draw(con_coord, (short)COLOR::Gray, fill.c_str(), field_width);
+        draw(win, con_coord, (short)COLOR::Gray, fill.c_str(), field_width);
         usleep(20*1000);    // 20ms
         con_coord.Y++;
     }
@@ -288,12 +289,36 @@ void Tetris_Draw_Linux_Console::draw_game_over()
     con_coord = coord_game_field;
     for (int i = 0; i < field_height; i++)
     {
-        draw(con_coord, (short)COLOR::Yellow, game_over_screen[i].c_str(), (int)game_over_screen[i].length());
+        draw(win, con_coord, (short)COLOR::Yellow, game_over_screen[i].c_str(), (int)game_over_screen[i].length());
         usleep(20*1000);    // 20ms
         con_coord.Y++;
     }
 
-    sleep(1000*1000);       // 1000ms
+    usleep(1000*1000);       // 1000ms
+}
+
+void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
+{
+    int ch;
+    while(ch = getch())
+    {
+        //printw("key %d", ch );
+        switch(ch)
+        {
+        case 115:        T->key_s();      break;
+        case 113:        T->key_q();      break;
+        case 103:        T->key_g();      break;
+        case 32:         T->key_space();  break;
+        case 27:         T->key_escape(); break;
+        case KEY_UP:     T->key_up();     break;
+        case KEY_DOWN:   T->key_down();   break;
+        case KEY_LEFT:   T->key_left();   break;
+        case KEY_RIGHT:  T->key_right();  break;
+        default: /*ignore other keys */    break;
+        }
+
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
+    }
 }
 
 #endif  // ((defined LINUX) || defined (__linux__))

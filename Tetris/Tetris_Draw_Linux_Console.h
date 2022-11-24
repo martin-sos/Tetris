@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <iostream>
 #include "Tetris_Draw.h"
+#include "Tetris.h"
 
 struct COORD {
     int X;
@@ -19,14 +20,15 @@ class Tetris_Draw_Linux_Console : public Tetris_Draw
 {
 public:
     Tetris_Draw_Linux_Console()
-        :old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width)))
+        :old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
+        win(initscr())              // initialize the screen
     {
         /* setup curses */
-        initscr();      // initialize the screen
-        cbreak();       // disable line buffering and take one character at a time
-        noecho();       // do not echo input back to screen
-        clear();        // clear the screen
-        curs_set(0);    // disbale the cursor
+        (void) cbreak();        // disable line buffering and take one character at a time
+        (void) noecho();        // do not echo input back to screen
+        (void) clear();         // clear the screen
+        curs_set(0);            // disbale the cursor
+        keypad (win, TRUE);     // enable function keys like ESC, down, up, left, right
 
         if(has_colors()) // TODO: make a try block here
         {
@@ -61,9 +63,11 @@ public:
     void draw_highscores(std::vector<Tetris_Stats_entry>) override final;
     void draw_game_over() override final;
 
+    void detectKeyboardInputLinux(Tetris* T);
+
 private:
     std::vector<std::vector<Field>> old_game_field;     // store the last given game field, in the next call of draw(), redraw only updated data fields
-
+    WINDOW *win;
     static constexpr COORD coord_preview_label      = { 5, 8 };
     static constexpr COORD coord_preview_tetromino  = { coord_preview_label.X + 2, coord_preview_label.Y + 2 };
     static constexpr COORD coord_game_frame         = { coord_preview_label.X + 13, coord_preview_label.Y - 5 };
