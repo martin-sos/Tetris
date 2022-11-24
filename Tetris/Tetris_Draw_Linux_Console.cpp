@@ -1,7 +1,7 @@
 #include "Tetris_Draw_Linux_Console.h"
 #include <boost/thread.hpp>
-#define LINUX
-#if ((defined LINUX) || defined (__linux__))
+
+#if (defined __unix__)
 
 
 constexpr COORD Tetris_Draw_Linux_Console::coord_preview_label;
@@ -63,22 +63,19 @@ void Tetris_Draw_Linux_Console::draw_scene(std::vector<std::vector<Field>> game_
 {
     COORD con_coord = coord_game_field;
 
+    /* just repaint the entire game field, otherwise weird characters may appear */
     for (int i = field_height - 1; i >= 0; i--)
     {
         for (int j = 0; j < field_width; j++)
         {
             Field f = game_field[i][j];
-            if (f.mino != old_game_field[i][j].mino ) // draw only what has changed
-            {
-                short color = minoToColor(f.mino);
-                con_coord.X = coord_game_field.X + j;
-                char buffer = minoToChar(f.mino);
-                draw(win, con_coord, color, &buffer, 1);
-            }
+            short color = minoToColor(f.mino);
+            con_coord.X = coord_game_field.X + j;
+            char buffer = minoToChar(f.mino);
+            draw(win, con_coord, color, &buffer, 1);
         }
         con_coord.Y++;
     }
-    old_game_field = game_field;    // saving current game field to detect changes in the next scene
 }
 
 void Tetris_Draw_Linux_Console::draw_layout()
@@ -300,9 +297,8 @@ void Tetris_Draw_Linux_Console::draw_game_over()
 void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
 {
     int ch;
-    while(ch = getch())
+    while(ch = wgetch(win))
     {
-        //printw("key %d", ch );
         switch(ch)
         {
         case 115:        T->key_s();      break;
@@ -314,11 +310,11 @@ void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
         case KEY_DOWN:   T->key_down();   break;
         case KEY_LEFT:   T->key_left();   break;
         case KEY_RIGHT:  T->key_right();  break;
-        default: /*ignore other keys */    break;
+        default: /*ignore other keys */   break;
         }
 
         boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 
-#endif  // ((defined LINUX) || defined (__linux__))
+#endif  // (defined __unix__)

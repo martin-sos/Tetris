@@ -1,7 +1,7 @@
 #ifndef _TETRIS_DRAW_LINUX_CONSOLE_H_
 #define _TETRIS_DRAW_LINUX_CONSOLE_H_
-#define LINUX
-#if ((defined LINUX) || defined (__linux__))
+
+#if (defined __unix__)
 
 #include <ncurses.h>
 #include <signal.h>
@@ -20,14 +20,13 @@ class Tetris_Draw_Linux_Console : public Tetris_Draw
 {
 public:
     Tetris_Draw_Linux_Console()
-        :old_game_field(std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width))),
-        win(initscr())              // initialize the screen
+        :win(initscr())              // initialize the screen
     {
         /* setup curses */
         (void) cbreak();        // disable line buffering and take one character at a time
         (void) noecho();        // do not echo input back to screen
-        (void) clear();         // clear the screen
         curs_set(0);            // disbale the cursor
+        clearok(win, TRUE);     // clear and repaint the screen from scratch on call to wrefresh
         keypad (win, TRUE);     // enable function keys like ESC, down, up, left, right
 
         if(has_colors()) // TODO: make a try block here

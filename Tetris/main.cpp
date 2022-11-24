@@ -2,14 +2,13 @@
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 
-#define LINUX
 // TODO: once another plartform is added, exclude platform specific parts into separate files and control interface usage via header files
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
 #include "Tetris_Draw_Windows_Console.h"
 #endif
 
-#if ((defined LINUX) || defined (__linux__))
+#ifdef __unix__
 #include "Tetris_Draw_Linux_Console.h"
 #endif
 
@@ -83,7 +82,7 @@ int main()
 #if (defined (_WIN32) || defined (_WIN64))
     Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
-#elif ((defined LINUX) || defined (__linux__))
+#elif (defined __unix__)
     Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
 
