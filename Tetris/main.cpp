@@ -1,34 +1,12 @@
 ﻿#include <iostream>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
+#include "Tetris.h"
+#include "Tetris_Draw_Console_Factory.h"
 
-// TODO: once another plartform is added, exclude platform specific parts into separate files and control interface usage via header files
+
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
-#include "Tetris_Draw_Windows_Console.h"
-#endif
-
-#ifdef __unix__
-#include "Tetris_Draw_Linux_Console.h"
-#endif
-
-#include "Tetris.h"
-
-
-std::string ASCII_LOGO = R"(
-
- _________     _______    _________     ________     ___      ________
-|\___   ___\  |\  ___ \   \___   ___\  |\   __  \   |\  \    |\   ____\
-\|___ \  \_|  \ \   __/|  |___ \  \_|  \ \  \|\  \  \ \  \   \ \  \___|_
-     \ \  \    \ \  \_|/__    \ \  \    \ \   _  _\  \ \  \   \ \_____  \
-      \ \  \    \ \  \_|\ \    \ \  \    \ \  \\  \|  \ \  \   \|____|\  \
-       \ \__\    \ \_______\    \ \__\    \ \__\\ _\   \ \__\    ____\_\  \
-        \|__|     \|_______|     \|__|     \|__|\|__|   \|__|   |\_________\
-                                                                \|_________|
-)";
-
-
-#if (defined (_WIN32) || defined (_WIN64))
 void detectKeyboardInputWindows(Tetris* T)
 {
     while (1)
@@ -77,20 +55,16 @@ void detectKeyboardInputWindows(Tetris* T)
 int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
-    std::cout << ASCII_LOGO;
-
 #if (defined (_WIN32) || defined (_WIN64))
-    Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
 #elif (defined __unix__)
-    Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
-
 #endif
 
-    Tetris T = Tetris(show, keyboard_input);
+    std::unique_ptr<Tetris_Draw> show = Tetris_Draw_Console_Factory::create();
+    Tetris T = Tetris(*show, keyboard_input);
 
-    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, show, &T) );
+    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, *((Tetris_Draw_Linux_Console*)show.get()), &T) );
 
     T.start();
     keyboard_thread.interrupt();

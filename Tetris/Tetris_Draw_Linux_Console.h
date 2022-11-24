@@ -77,5 +77,5 @@ private:
     static constexpr COORD coord_stats_score        = { coord_stats_lines.X, coord_stats_level.Y + 2 };
     static constexpr COORD coord_stats_highscore    = { coord_stats_lines.X + 15, coord_stats_lines.Y };
 };
-#endif // ((defined LINUX) || defined (__linux__))
+#endif // (defined __unix__)
 #endif // _TETRIS_DRAW_LINUX_CONSOLE_H_
