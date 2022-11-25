@@ -1,7 +1,7 @@
 #ifndef TETRIS_DRAW_CONSOLE_FACTORY_H
 #define TETRIS_DRAW_CONSOLE_FACTORY_H
 #include <memory>
-#ifdef __unix__
+#if ((defined __unix__) || (defined __APPLE__))
 #include "Tetris_Draw_Linux_Console.h"
 #elif (defined (_WIN32) || defined (_WIN64))
 #include "Tetris_Draw_Windows_Console.h"

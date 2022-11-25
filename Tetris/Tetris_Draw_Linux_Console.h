@@ -1,7 +1,7 @@
 #ifndef _TETRIS_DRAW_LINUX_CONSOLE_H_
 #define _TETRIS_DRAW_LINUX_CONSOLE_H_
 
-#if (defined __unix__)
+#if ((defined __unix__) || (defined __APPLE__))
 
 #include <ncurses.h>
 #include <signal.h>
@@ -14,7 +14,7 @@ struct COORD {
     int Y;
 };
 
-enum class COLOR { Black = 0, Blue = 1, Green = 2, Red = 4, Gray = 8, Cyan = 11, Orange = 12, Magenta = 13, Yellow = 14, White = 15 };
+enum class COLOR { Black = 0, Blue = 4, Green = 1, Red = 2, Gray = 8, Cyan = 6, Orange = 9, Magenta = 5, Yellow = 3, White = 7 };
 
 class Tetris_Draw_Linux_Console : public Tetris_Draw
 {
@@ -28,7 +28,7 @@ public:
         curs_set(0);            // disbale the cursor
         clearok(win, TRUE);     // clear and repaint the screen from scratch on call to wrefresh
         keypad (win, TRUE);     // enable function keys like ESC, down, up, left, right
-
+        
         if(has_colors()) // TODO: make a try block here
         {
             start_color();
@@ -52,7 +52,8 @@ public:
 
     ~Tetris_Draw_Linux_Console()
     {
-        endwin();       // exit the curses environment
+        wstandend(win);
+        endwin();  // exit the curses environment
     }
 
     void draw_scene(std::vector<std::vector<Field>>) override final;

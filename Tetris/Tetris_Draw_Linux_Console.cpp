@@ -1,8 +1,6 @@
 #include "Tetris_Draw_Linux_Console.h"
 #include <boost/thread.hpp>
-
-#if (defined __unix__)
-
+#if ((defined __unix__) || (defined __APPLE__))
 
 constexpr COORD Tetris_Draw_Linux_Console::coord_preview_label;
 constexpr COORD Tetris_Draw_Linux_Console::coord_preview_tetromino;
@@ -53,6 +51,7 @@ static inline constexpr short minoToColor(const TetrominoKind mino)
 static inline void draw(WINDOW* win, COORD coord, short color, const char *c_str, int n)
 {
     wmove(win, coord.Y, coord.X);
+    wattrset(win, A_BOLD);
     wattron(win, COLOR_PAIR(color));
     waddnstr(win, c_str, n);
     wattroff(win, COLOR_PAIR(color));
@@ -164,7 +163,8 @@ void Tetris_Draw_Linux_Console::update_preview(TetrominoKind kind)
     case TetrominoKind::T: t[0] = " #  "; t[1] = "### "; break;
     case TetrominoKind::Z: t[0] = "##  "; t[1] = " ## "; break;
     case TetrominoKind::Pause: t[0] = "----"; t[1] = "----"; break;
-    case TetrominoKind::none: t[0] = "    "; t[1] = "    "; break;
+    case TetrominoKind::Ghost: 
+    case TetrominoKind::none:  t[0] = "    "; t[1] = "    "; break;
     }
 
     short color = minoToColor(kind);
@@ -297,7 +297,7 @@ void Tetris_Draw_Linux_Console::draw_game_over()
 void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
 {
     int ch;
-    while(ch = wgetch(win))
+    while((ch = wgetch(win)))
     {
         switch(ch)
         {
@@ -313,7 +313,7 @@ void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
         default: /*ignore other keys */   break;
         }
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
+        usleep(thread_sleep_time_in_ms*1000);
     }
 }
 

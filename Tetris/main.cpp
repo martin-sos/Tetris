@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 #include "Tetris.h"
@@ -57,19 +57,23 @@ int main()
     std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
 #if (defined (_WIN32) || defined (_WIN64))
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
-#elif (defined __unix__)
+#elif ((defined __unix__) || (defined __APPLE__))
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
 #endif
 
-    std::unique_ptr<Tetris_Draw> show = Tetris_Draw_Console_Factory::create();
-    Tetris T = Tetris(*show, keyboard_input);
+    //std::unique_ptr<Tetris_Draw> show = Tetris_Draw_Console_Factory::create();
+    
+    Tetris_Draw_Linux_Console s;
+    Tetris T = Tetris(s, keyboard_input);
+    //Tetris T = Tetris(*show, keyboard_input);
 
-#ifdef __unix__
-    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, *((Tetris_Draw_Linux_Console*)show.get()), &T) );
+#if ((defined __unix__) || (defined __APPLE__))
+    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, s, &T) );
+    //boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, *((Tetris_Draw_Linux_Console*)show.get()), &T) );
 #endif
     T.start();
 
-#ifdef __unix__
+#if ((defined __unix__) || (defined __APPLE__))
     keyboard_thread.interrupt();
     keyboard_thread.join();
 #endif

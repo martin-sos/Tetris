@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <mutex>
+//#include <mutex>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 #include "Tetris.h"
@@ -289,7 +289,7 @@ void Tetris::run()
             }
             show.draw_scene(game_field);
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
+        usleep(thread_sleep_time_in_ms*1000);
     }
 }
 
