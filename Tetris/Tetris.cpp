@@ -2,6 +2,7 @@
 #include <string>
 #include <mutex>
 #include <thread>
+#include <functional>
 #include <chrono>
 #include "Tetris.h"
 
