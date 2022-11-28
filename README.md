@@ -40,9 +40,7 @@ How does the Tetris class react on keyboard inputs? Keyboard input shall be sign
 
 Thus, it is the responsibility of the user to detect keyboard inputs and signal those to the Tetris object. Optionally, as a second argument to the Tetris constuctor, 
 the user can provide a function pointer `void (*func)(Tetris *Tetris_object)`. The adressed function is supposed to perform the keyboard detection and is expected to call 
-`key_<key>()`. Tetris controls the execution of func() in a boost-thread. When providing the second argument, the implementation of func() shall provide an interruption point, 
-i.e. calling `boost::this_thread::sleep_for()`. This way Tetris can trigger the termination of the thread when calling `interrupt()`. When the second argument is not specified, 
-Tetris is just ignoring it and does not spawn a thread. 
+`key_<key>()`. Tetris controls the execution of func() in a boost-thread. When providing the second argument, the implementation of func() shall detect the termination of the Tetris game by polling the quit() interface. Once it returns true, func() shall terminate. 
 
 
 ## External libraries
