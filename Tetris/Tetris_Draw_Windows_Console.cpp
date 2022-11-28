@@ -1,5 +1,6 @@
 #include "Tetris_Draw_Windows_Console.h"
-
+#include <thread>
+#include <chrono>
 #if (defined (_WIN32) || defined (_WIN64))
 
 constexpr COORD Tetris_Draw_Windows_Console::coord_preview_label;
@@ -279,7 +280,7 @@ void Tetris_Draw_Windows_Console::draw_game_over()
     for (int i = 0; i < field_height; i++)
     {
         draw(screen_buffer_handle, con_coord, (WORD)COLOR::Gray, fill.c_str(), field_width);
-        Sleep(20);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
         con_coord.Y++;
     }
 
@@ -287,11 +288,11 @@ void Tetris_Draw_Windows_Console::draw_game_over()
     for (int i = 0; i < field_height; i++)
     {
         draw(screen_buffer_handle, con_coord, (WORD)COLOR::Yellow, game_over_screen[i].c_str(), (DWORD)game_over_screen[i].length());
-        Sleep(20);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
         con_coord.Y++;
     }
 
-    Sleep(1000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 #endif // (defined (_WIN32) || defined (_WIN64))

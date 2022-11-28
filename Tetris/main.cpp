@@ -1,32 +1,16 @@
-﻿#include <iostream>
-#include <boost/chrono.hpp>
-#include <boost/thread.hpp>
-
-// TODO: once another plartform is added, exclude platform specific parts into separate files and control interface usage via header files
-#if (defined (_WIN32) || defined (_WIN64))
-#include <windows.h>
-#endif
-
+#include <cstdlib>
+#include <thread>
+#include <functional>
+#include <chrono>
 #include "Tetris.h"
+#include "Tetris_Draw_Linux_Console.h"
 #include "Tetris_Draw_Windows_Console.h"
 
-std::string ASCII_LOGO = R"(
-
- _________     _______    _________     ________     ___      ________      
-|\___   ___\  |\  ___ \   \___   ___\  |\   __  \   |\  \    |\   ____\     
-\|___ \  \_|  \ \   __/|  |___ \  \_|  \ \  \|\  \  \ \  \   \ \  \___|_    
-     \ \  \    \ \  \_|/__    \ \  \    \ \   _  _\  \ \  \   \ \_____  \   
-      \ \  \    \ \  \_|\ \    \ \  \    \ \  \\  \|  \ \  \   \|____|\  \  
-       \ \__\    \ \_______\    \ \__\    \ \__\\ _\   \ \__\    ____\_\  \ 
-        \|__|     \|_______|     \|__|     \|__|\|__|   \|__|   |\_________\
-                                                                \|_________|
-)";
-
-
 #if (defined (_WIN32) || defined (_WIN64))
+#include <windows.h>
 void detectKeyboardInputWindows(Tetris* T)
 {
-    while (1)
+    while (T->quit() == false)
     {
         if ((GetAsyncKeyState(VK_LEFT) & 0x01))
             T->key_left();
@@ -64,26 +48,35 @@ void detectKeyboardInputWindows(Tetris* T)
             GetAsyncKeyState(VK_LEFT);
         }
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 #endif
 
+
 int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
-    std::cout << ASCII_LOGO;
+    
 #if (defined (_WIN32) || defined (_WIN64))
-    Tetris_Draw_Windows_Console show = Tetris_Draw_Windows_Console();
+    
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
-#elif (defined LINUX) || defined (__linux__))
-    Tetris_Draw_Linux_Console show = Tetris_Draw_Linux_Console();
-    void (*func)(Tetris* Tetris_object) = nullptr;
-#endif
-
+    Tetris_Draw_Windows_Console show;
     Tetris T = Tetris(show, keyboard_input);
     T.start();
-   
     
+#elif ((defined __unix__) || (defined __APPLE__))
+    
+    void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
+    Tetris_Draw_Linux_Console show;
+    Tetris T = Tetris(show, keyboard_input);
+    
+    std::thread keyboard_thread(std::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, &show, &T));
+    
+    T.start();
+    keyboard_thread.join();
+    
+#endif
+
     return 0;
 }

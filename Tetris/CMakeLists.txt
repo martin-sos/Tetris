@@ -4,8 +4,8 @@ project(Tetris VERSION  1.0)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(Boost_USE_STATIC_LIBS ON) 
-set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system chrono thread)
 
 if(WIN32)
@@ -20,16 +20,16 @@ if(UNIX)
 endif()
 
 add_executable(Tetris
-    main.cpp 
-    Tetris.cpp 
-    Tetromino.cpp 
-    Tetris_Statistics.cpp 
-    Tetris_Draw_Linux_Console.cpp 
-    Tetris_Draw_Windows_Console.cpp 
-    Tetris.h 
-    Tetris_Definitions.h 
-    Tetris_Draw.h 
-    Tetris_Draw_Linux_Console.h 
+    main.cpp
+    Tetris.cpp
+    Tetromino.cpp
+    Tetris_Statistics.cpp
+    Tetris_Draw_Linux_Console.cpp
+    Tetris_Draw_Windows_Console.cpp
+    Tetris.h
+    Tetris_Definitions.h
+    Tetris_Draw.h
+    Tetris_Draw_Linux_Console.h
     Tetris_Draw_Windows_Console.h
     Tetris_Statistics.h
     Tetromino.h

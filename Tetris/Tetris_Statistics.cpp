@@ -36,7 +36,8 @@ void Tetris_Statistics::add_stats(Tetris_Stats_entry entry)
         rc = sqlite3_finalize(stmt);
 
     if (rc == SQLITE_OK)
-        std::cout << "new entry into table << game >> has been added..." << std::endl;
+        //std::cout << "new entry into table << game >> has been added..." << std::endl;
+        ;
     else
         std::cout << "Error: query " << sql_stmt << " failed with error code " << rc << std::endl;
 
