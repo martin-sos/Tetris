@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <thread>
+#include <functional>
 #include <chrono>
 #include "Tetris.h"
 #include "Tetris_Draw_Linux_Console.h"
