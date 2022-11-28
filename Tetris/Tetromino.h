@@ -7,8 +7,9 @@
 
 class Tetromino {
 public:
-    static Tetromino getTetromino();
-
+    static Tetromino getTetromino();    
+    static void reset();                // pop all elements from bag_of_seven to empty it
+    
     void shiftTetromino(MoveTetromino direction);
     void rotateTetromino(RotateTetromino direction);
 

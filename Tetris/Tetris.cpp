@@ -322,6 +322,9 @@ void Tetris::start()
             game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
             game_loop_sleep_time_ms = initial_gravity;
             entry.level = 1; entry.lines = 0; entry.score = 0;
+            Tetromino::reset();
+            nextTetromino = Tetromino::getTetromino();
+            ghost = currentTetromino = nextTetromino;
 
             show.draw_game_over();
 

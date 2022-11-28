@@ -39,6 +39,12 @@ Tetromino Tetromino::getTetromino()
     return Tetromino(next);
 }
 
+void Tetromino::reset()
+{
+    while(Tetromino::bag_of_seven.empty() == false)
+        Tetromino::bag_of_seven.pop();
+}
+
 void Tetromino::shiftTetromino(MoveTetromino direction)
 {
     int x = 0, y = 0;
