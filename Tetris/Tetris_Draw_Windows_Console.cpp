@@ -1,5 +1,6 @@
 #include "Tetris_Draw_Windows_Console.h"
-
+#include <thread>
+#include <chrono>
 #if (defined (_WIN32) || defined (_WIN64))
 
 constexpr COORD Tetris_Draw_Windows_Console::coord_preview_label;
