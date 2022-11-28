@@ -29,7 +29,6 @@ add_executable(Tetris
     Tetris.h
     Tetris_Definitions.h
     Tetris_Draw.h
-    Tetris_Draw_Console_Factory.h
     Tetris_Draw_Linux_Console.h
     Tetris_Draw_Windows_Console.h
     Tetris_Statistics.h

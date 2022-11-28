@@ -1,5 +1,6 @@
 #include "Tetris_Draw_Linux_Console.h"
-#include <boost/thread.hpp>
+#include <thread>
+#include <chrono>
 #if ((defined __unix__) || (defined __APPLE__))
 
 constexpr COORD Tetris_Draw_Linux_Console::coord_preview_label;
@@ -279,7 +280,8 @@ void Tetris_Draw_Linux_Console::draw_game_over()
     for (int i = 0; i < field_height; i++)
     {
         draw(win, con_coord, (short)COLOR::Gray, fill.c_str(), field_width);
-        usleep(20*1000);    // 20ms
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
         con_coord.Y++;
     }
 
@@ -287,11 +289,12 @@ void Tetris_Draw_Linux_Console::draw_game_over()
     for (int i = 0; i < field_height; i++)
     {
         draw(win, con_coord, (short)COLOR::Yellow, game_over_screen[i].c_str(), (int)game_over_screen[i].length());
-        usleep(20*1000);    // 20ms
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
         con_coord.Y++;
     }
 
-    usleep(1000*1000);       // 1000ms
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
@@ -313,7 +316,7 @@ void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
         default: /*ignore other keys */   break;
         }
 
-        usleep(thread_sleep_time_in_ms*1000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 
