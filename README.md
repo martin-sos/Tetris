@@ -41,5 +41,4 @@ Tetris is just ignoring it and does not spawn a thread.
 
 ## External libraries
 - sqlite3 for storing game stats
-- boost for threads
 - curses for drawing in unix like consoles
