@@ -57,29 +57,29 @@ void detectKeyboardInputWindows(Tetris* T)
 
 int main()
 {
-    // TODO: main is completly messed up....does not work in a platform independet way
     std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
     
 #if (defined (_WIN32) || defined (_WIN64))
+    
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
     Tetris_Draw_Windows_Console show;
+    Tetris T = Tetris(show, keyboard_input);
+    T.start();
+    
 #elif ((defined __unix__) || (defined __APPLE__))
+    
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
     Tetris_Draw_Linux_Console show;
-#endif
-
     Tetris T = Tetris(show, keyboard_input);
-
-#if ((defined __unix__) || (defined __APPLE__))
+    
     boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, show, &T) );
-#endif
     
     T.start();
-
-#if ((defined __unix__) || (defined __APPLE__))
+    
     keyboard_thread.interrupt();
     keyboard_thread.join();
-#endif
     
+#endif
+
     return 0;
 }
