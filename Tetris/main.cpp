@@ -1,9 +1,11 @@
 #include <iostream>
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>
+#include <thread>
+#include <chrono>
 #include "Tetris.h"
-#include "Tetris_Draw_Console_Factory.h"
-
+#include "Tetris_Draw_Linux_Console.h"
+#include "Tetris_Draw_Windows_Console.h"
 
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
@@ -47,35 +49,37 @@ void detectKeyboardInputWindows(Tetris* T)
             GetAsyncKeyState(VK_LEFT);
         }
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(thread_sleep_time_in_ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds(thread_sleep_time_in_ms));
     }
 }
 #endif
 
+
 int main()
 {
+    // TODO: main is completly messed up....does not work in a platform independet way
     std::srand(static_cast<unsigned>(std::time(nullptr)));  // seed prng
+    
 #if (defined (_WIN32) || defined (_WIN64))
     void (*keyboard_input)(Tetris* Tetris_object) = detectKeyboardInputWindows;
+    Tetris_Draw_Windows_Console show;
 #elif ((defined __unix__) || (defined __APPLE__))
     void (*keyboard_input)(Tetris* Tetris_object) = nullptr;
+    Tetris_Draw_Linux_Console show;
 #endif
 
-    //std::unique_ptr<Tetris_Draw> show = Tetris_Draw_Console_Factory::create();
-    
-    Tetris_Draw_Linux_Console s;
-    Tetris T = Tetris(s, keyboard_input);
-    //Tetris T = Tetris(*show, keyboard_input);
+    Tetris T = Tetris(show, keyboard_input);
 
 #if ((defined __unix__) || (defined __APPLE__))
-    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, s, &T) );
-    //boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, *((Tetris_Draw_Linux_Console*)show.get()), &T) );
+    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, show, &T) );
 #endif
+    
     T.start();
 
 #if ((defined __unix__) || (defined __APPLE__))
     keyboard_thread.interrupt();
     keyboard_thread.join();
 #endif
+    
     return 0;
 }
