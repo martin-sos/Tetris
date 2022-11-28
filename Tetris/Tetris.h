@@ -23,6 +23,7 @@ public:
     }
 
     void start();   // starts a Tetris game, spawns all needed threads, terminates as soon as game is over
+    bool quit() { return (game_state==Tetris_State::quit);}
 
     void key_up()   { if (game_state == Tetris_State::playing) rotate(RotateTetromino::Clockwise); }
     void key_down() { if (game_state == Tetris_State::playing) rotate(RotateTetromino::CounterClockwise); }

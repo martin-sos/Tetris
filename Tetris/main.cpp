@@ -1,6 +1,4 @@
 #include <cstdlib>
-#include <boost/chrono.hpp>
-#include <boost/thread.hpp>
 #include <thread>
 #include <chrono>
 #include "Tetris.h"
@@ -11,7 +9,7 @@
 #include <windows.h>
 void detectKeyboardInputWindows(Tetris* T)
 {
-    while (1)
+    while (T->quit() == false)
     {
         if ((GetAsyncKeyState(VK_LEFT) & 0x01))
             T->key_left();
@@ -72,11 +70,9 @@ int main()
     Tetris_Draw_Linux_Console show;
     Tetris T = Tetris(show, keyboard_input);
     
-    boost::thread keyboard_thread(boost::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, show, &T) );
+    std::thread keyboard_thread(std::bind(&Tetris_Draw_Linux_Console::detectKeyboardInputLinux, &show, &T));
     
     T.start();
-    
-    keyboard_thread.interrupt();
     keyboard_thread.join();
     
 #endif
