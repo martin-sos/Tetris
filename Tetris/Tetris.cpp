@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-//#include <mutex>
+#include <mutex>
 #include <thread>
 #include <chrono>
 #include <boost/chrono.hpp>
@@ -329,7 +329,6 @@ void Tetris::start()
             // busy wait for user quitting or starting another game
             while (game_state == Tetris_State::game_over)
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
-;
 
         } while (game_state == Tetris_State::playing);
 
