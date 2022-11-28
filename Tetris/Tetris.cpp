@@ -3,8 +3,6 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
-#include <boost/chrono.hpp>
-#include <boost/thread.hpp>
 #include "Tetris.h"
 
 std::mutex m;
@@ -300,9 +298,9 @@ void Tetris::start()
 {
     if (game_state == Tetris_State::idle)
     {
-        boost::thread keyboard_thread;
+        std::thread keyboard_thread;
         if (detectKeyboardInput != nullptr)
-            keyboard_thread = boost::thread(detectKeyboardInput, this);
+            keyboard_thread = std::thread(detectKeyboardInput, this);
 
         game_state = Tetris_State::playing;
 
@@ -314,7 +312,7 @@ void Tetris::start()
             show.draw_highscores(stats.get_high_scores());
 
             placeNextTetromino();
-            boost::thread game_thread(boost::bind(&Tetris::run, this));
+            std::thread game_thread(std::bind(&Tetris::run, this));
             game_thread.join();
 
             /* ***  from here : game is over *** */
@@ -334,7 +332,6 @@ void Tetris::start()
 
         if (detectKeyboardInput != nullptr)
         {
-            keyboard_thread.interrupt();
             keyboard_thread.join();
         }
     }
