@@ -300,8 +300,10 @@ void Tetris_Draw_Linux_Console::draw_game_over()
 void Tetris_Draw_Linux_Console::detectKeyboardInputLinux(Tetris* T)
 {
     int ch;
-    while((ch = wgetch(win)))
+    while(T->quit() == false)
     {
+        ch = wgetch(win);
+         
         switch(ch)
         {
         case 115:        T->key_s();      break;
