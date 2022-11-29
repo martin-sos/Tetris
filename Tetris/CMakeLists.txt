@@ -33,6 +33,7 @@ add_executable(Tetris
     Tetris_Draw_Windows_Console.h
     Tetris_Statistics.h
     Tetromino.h
+    Bag_of_Seven.h
 )
 
 # *** setup includes ***

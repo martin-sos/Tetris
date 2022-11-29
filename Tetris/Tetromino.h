@@ -7,8 +7,13 @@
 
 class Tetromino {
 public:
-    static Tetromino getTetromino();    
-    static void reset();                // pop all elements from bag_of_seven to empty it
+    Tetromino(TetrominoKind k)
+        :kind(k),
+        orientation(orientation = TetrominoOrientation::Zero),
+        location(std::vector <std::pair<int, int>>(maxMinos, std::pair<int, int>(0, 0)))
+    {
+        setInitiallocation(kind);
+    }
     
     void shiftTetromino(MoveTetromino direction);
     void rotateTetromino(RotateTetromino direction);
@@ -21,15 +26,7 @@ private:
     TetrominoKind kind;
     TetrominoOrientation orientation;
     std::vector<std::pair<int, int>> location;
-    static std::queue<TetrominoKind> bag_of_seven;
 
-    Tetromino(TetrominoKind k)
-        :kind(k),
-        orientation(orientation = TetrominoOrientation::Zero),
-        location(std::vector <std::pair<int, int>>(maxMinos, std::pair<int, int>(0, 0)))
-    {
-        setInitiallocation(kind);
-    }
 
     void setInitiallocation(TetrominoKind);
 

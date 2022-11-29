@@ -6,6 +6,7 @@
 #include "Tetromino.h"
 #include "Tetris_Definitions.h"
 #include "Tetris_Statistics.h"
+#include "Bag_of_Seven.h"
 
 class Tetris {
 public:
@@ -18,7 +19,8 @@ public:
         detectKeyboardInput(f),
         entry({ "Player 1", 0, 1, 0 }),
         stats(Tetris_Statistics::get_instance()),
-        nextTetromino(Tetromino::getTetromino()), currentTetromino(nextTetromino), ghost(currentTetromino)
+        bag_of_tetrominos(Bag_of_Seven<Tetromino>(Tetromino(TetrominoKind::I), Tetromino(TetrominoKind::J), Tetromino(TetrominoKind::L), Tetromino(TetrominoKind::S), Tetromino(TetrominoKind::T), Tetromino(TetrominoKind::O), Tetromino(TetrominoKind::Z))),
+        nextTetromino(bag_of_tetrominos.grab_from_bag()), currentTetromino(nextTetromino), ghost(currentTetromino)
     {
     }
 
@@ -106,6 +108,7 @@ private:
     Tetris_Stats_entry entry;
     Tetris_Statistics& stats;
     
+    Bag_of_Seven<Tetromino> bag_of_tetrominos;      
     Tetromino nextTetromino;                        // the TetrominoKind which is added next to the game field
     Tetromino currentTetromino;                     // the Tetromnino which is currently falling
     Tetromino ghost;                                // a projection of the current Tetromino at the location where the current Tetromino would land 
