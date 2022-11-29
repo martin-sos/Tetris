@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _BAG_OF_SEVEN_H_
+#define _BAG_OF_SEVEN_H_
+
 template <class T>
 class Bag_of_Seven
 {
@@ -36,3 +38,4 @@ private:
     std::vector<T> bag;
 };
 
+#endif // _BAG_OF_SEVEN_H_
