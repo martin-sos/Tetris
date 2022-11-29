@@ -13,7 +13,7 @@ void Tetris::placeNextTetromino()
     // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
     ghost = currentTetromino = nextTetromino;
     placeCurrentTetromino();
-    nextTetromino = Tetromino::getTetromino();
+    nextTetromino = bag_of_tetrominos.grab_from_bag();
     show.update_preview(nextTetromino.getKind());
 }
 
@@ -322,8 +322,9 @@ void Tetris::start()
             game_field = std::vector<std::vector<Field>>(field_height, std::vector<Field>(field_width, { TetrominoKind::none, false }));
             game_loop_sleep_time_ms = initial_gravity;
             entry.level = 1; entry.lines = 0; entry.score = 0;
-            Tetromino::reset();
-            nextTetromino = Tetromino::getTetromino();
+
+            bag_of_tetrominos.clear();
+            nextTetromino = bag_of_tetrominos.grab_from_bag();
             ghost = currentTetromino = nextTetromino;
 
             show.draw_game_over();
