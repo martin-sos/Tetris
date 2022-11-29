@@ -23,6 +23,16 @@ public:
         SetConsoleCursorInfo(screen_buffer_handle, &cursor);
     }
 
+    Tetris_Draw_Windows_Console(const Tetris_Draw_Windows_Console&) = delete;
+    Tetris_Draw_Windows_Console(Tetris_Draw_Windows_Console&&) = delete;
+    Tetris_Draw_Windows_Console& operator=(const Tetris_Draw_Windows_Console&) = delete;
+    Tetris_Draw_Windows_Console& operator=(Tetris_Draw_Windows_Console&&) = delete;
+
+    ~Tetris_Draw_Windows_Console()
+    {
+        CloseHandle(screen_buffer_handle);
+    }
+
     void draw_scene(std::vector<std::vector<Field>>) override final;
     void draw_layout() override final;
     void update_stats(Tetris_Stats_entry) override final;
