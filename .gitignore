@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# ignore application generated files
+scores.db
+
 # User-specific files
 *.rsuser
 *.suo
@@ -97,6 +100,13 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*vcxproj*
+*.sln
+
+#CMake files
+CMakeFiles/
+CmakeCache.txt
+cmake_install.cmake
 
 # Chutzpah Test files
 _Chutzpah*
