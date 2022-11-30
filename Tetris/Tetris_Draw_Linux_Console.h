@@ -48,6 +48,11 @@ public:
         }
     }
 
+    Tetris_Draw_Linux_Console(const Tetris_Draw_Linux_Console&) = delete;
+    Tetris_Draw_Linux_Console(Tetris_Draw_Linux_Console&&) = delete;
+    Tetris_Draw_Linux_Console& operator=(const Tetris_Draw_Linux_Console&) = delete;
+    Tetris_Draw_Linux_Console& operator=(Tetris_Draw_Linux_Console&&) = delete;
+
     ~Tetris_Draw_Linux_Console()
     {
         wstandend(win);
