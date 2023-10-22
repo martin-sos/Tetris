@@ -33,7 +33,7 @@ public:
         CloseHandle(screen_buffer_handle);
     }
 
-    void draw_scene(std::vector<std::vector<Field>>) override final;
+    void draw_scene(const std::vector<std::vector<Field>> &) override final;
     void draw_layout() override final;
     void update_stats(Tetris_Stats_entry) override final;
     void update_preview(TetrominoKind) override final;

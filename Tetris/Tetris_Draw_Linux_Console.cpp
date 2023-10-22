@@ -59,7 +59,7 @@ static inline void draw(WINDOW* win, COORD coord, short color, const char *c_str
     wrefresh(win);
 }
 
-void Tetris_Draw_Linux_Console::draw_scene(std::vector<std::vector<Field>> game_field)
+void Tetris_Draw_Linux_Console::draw_scene(const std::vector<std::vector<Field>>& game_field)
 {
     COORD con_coord = coord_game_field;
 

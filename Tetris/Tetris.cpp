@@ -8,32 +8,63 @@
 
 std::mutex m;
 
-void Tetris::placeNextTetromino()
+inline void Tetris::set_field(int i, int j, Field f)
 {
-    // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
-    ghost = currentTetromino = nextTetromino;
-    placeCurrentTetromino();
-    nextTetromino = bag_of_tetrominos.grab_from_bag();
-    show.update_preview(nextTetromino.getKind());
+    std::lock_guard<std::mutex> lockGuard(m);
+    game_field[i][j] = f;
 }
 
-void Tetris::placeCurrentTetromino()
+inline void Tetris::set_tetromino(TetrominoKind kind, std::vector<std::pair<int, int>> location)
 {
-    std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
-    TetrominoKind kind = currentTetromino.getKind();
+    std::lock_guard<std::mutex> lockGuard(m);
+    for (int i = 0; i < maxMinos; i++)
+        game_field[location[i].first][location[i].second] =  {kind, false};
+}
+
+inline void Tetris::set_row(int i, std::vector<Field> row)
+{
+    std::lock_guard<std::mutex> lockGuard(m);
+    game_field[i] = row;
+}
+
+inline bool Tetris::is_occupied(int i, int j) const
+{
+    std::lock_guard<std::mutex> lockGuard(m);
+    return game_field[i][j].occupied;
+}
+
+inline void Tetris::occupy(int i, int j)
+{
+    std::lock_guard<std::mutex> lockGuard(m);
+    game_field[i][j].occupied = true;
+}
+
+
+void Tetris::place_next_tetromino()
+{
+    // TODO: shall we spwan in row 21 and 22, but keep the game_field of matter 10 by 20??
+    ghost = current_tetromino = next_tetromino;
+    place_current_tetromino();
+    next_tetromino = bag_of_tetrominos.grab_from_bag();
+    show.update_preview(next_tetromino.getKind());
+}
+
+void Tetris::place_current_tetromino()
+{
+    std::vector<std::pair<int, int>> location = current_tetromino.getLocation();
+    TetrominoKind kind = current_tetromino.getKind();
 
     for (int i = 0; i < maxMinos; i++)
     {
         // detect game over
-        if (game_field[location[i].first][location[i].second].occupied)
+        if (is_occupied(location[i].first, location[i].second))
             game_state = Tetris_State::game_over;
-
-        // place the next stone anyway
-        game_field[location[i].first][location[i].second] = { kind, false };
     }
 
+    set_tetromino(kind, location);
+
     // as the position of the current tetromino is now determined, the position of its ghost can be determined as well
-    updateGhost();
+    update_ghost();
 
     if (game_state == Tetris_State::game_over)
     {   // on game over: draw the game field a very last time, save the score and print all highscores
@@ -46,8 +77,7 @@ void Tetris::placeCurrentTetromino()
 
 void Tetris::rotate(const RotateTetromino direction)
 {
-    std::lock_guard<std::mutex> lockGuard(m);
-    Tetromino testTetromino = currentTetromino; // test a rotation on a copy, only if successfull, execute it
+    Tetromino testTetromino = current_tetromino; // test a rotation on a copy, only if successfull, execute it
 
     bool validRotation = true;
     testTetromino.rotateTetromino(direction);
@@ -63,7 +93,7 @@ void Tetris::rotate(const RotateTetromino direction)
         }
 
         /* does it rotate into another mino? */
-        if(game_field[location[i].first][location[i].second].occupied)
+        if(is_occupied(location[i].first, location[i].second))
         {
             validRotation = false;
             break;
@@ -72,14 +102,11 @@ void Tetris::rotate(const RotateTetromino direction)
 
     if (validRotation)
     {
-        location = currentTetromino.getLocation();
-
         /* remove from game field */
-        for (auto i = maxMinos - 1; i >= 0; i--)
-            game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
+        set_tetromino(TetrominoKind::none, current_tetromino.getLocation());
 
-        currentTetromino = testTetromino;
-        placeCurrentTetromino();
+        current_tetromino = testTetromino;
+        place_current_tetromino();
     }
 }
 
@@ -88,7 +115,7 @@ bool Tetris::fall()
     return shift(MoveTetromino::Down);
 }
 
-bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
+bool Tetris::try_shift(const MoveTetromino direction, Tetromino t) const
 {
     int x = 0, y = 0;
     switch (direction)
@@ -110,8 +137,8 @@ bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
         int col = location[i].second;
 
         if (row + y < 0 || row + y >= field_height ||
-            col + x < 0 || col + x >= field_width ||
-            game_field[row + y][col + x].occupied == true)
+            col + x < 0 || col + x >= field_width || 
+            is_occupied(row + y, col + x)) 
         {
             canMove = false;
             break;
@@ -123,49 +150,42 @@ bool Tetris::tryShift(const MoveTetromino direction, Tetromino t) const
 
 bool Tetris::shift(const MoveTetromino direction)
 {
-    std::lock_guard<std::mutex> lockGuard(m);
-
     /* 1. check if move is possible */
-    bool canMove = tryShift(direction, currentTetromino);
-    std::vector<std::pair<int, int>> location = currentTetromino.getLocation();
+    bool canMove = try_shift(direction, current_tetromino);
+    std::vector<std::pair<int, int>> location = current_tetromino.getLocation();
 
     /* 2. if it can move, move it */
     if (canMove)
     {
-        for (auto i = maxMinos - 1; i >= 0; i--)
-            game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
-
-        currentTetromino.shiftTetromino(direction);
-        placeCurrentTetromino();
+        set_tetromino(TetrominoKind::none, location);
+        current_tetromino.shiftTetromino(direction);
+        place_current_tetromino();
     }
 
     /* 3. if this was a fall down move, then mark the fields as occupied if the Tetromino cannot fall anymore */
     if (canMove == false && direction == MoveTetromino::Down)
     {
         for (auto i = maxMinos - 1; i >= 0; i--)
-        {
-            int row = location[i].first;
-            int col = location[i].second;
-            game_field[row][col].occupied = true;
-        }
+            occupy(location[i].first, location[i].second);
     }
     return canMove;
 }
 
-void Tetris::updateGhost()
+void Tetris::update_ghost()
 {
     if (ghosting)
     {
+        std::lock_guard<std::mutex> lockGuard(m);
         /* 1. reset previous ghost */
-        eraseGhost();
+        erase_ghost();
 
         /* 2. compute ghost projection */
-        ghost = currentTetromino;
-        bool canMove = tryShift(MoveTetromino::Down, ghost);
+        ghost = current_tetromino;
+        bool canMove = try_shift(MoveTetromino::Down, ghost);
         while (canMove)
         {
             ghost.shiftTetromino(MoveTetromino::Down);
-            canMove = tryShift(MoveTetromino::Down, ghost);
+            canMove = try_shift(MoveTetromino::Down, ghost);
         }
 
         /* 3. place the ghost */
@@ -174,12 +194,12 @@ void Tetris::updateGhost()
         {
             // but do not overwrite the current Tetromino when it just landed
             if (game_field[location[i].first][location[i].second].mino == TetrominoKind::none)
-                game_field[location[i].first][location[i].second] = { TetrominoKind::Ghost, false };
+                set_field(location[i].first, location[i].second, { TetrominoKind::Ghost, false });
         }
     }
 }
 
-void Tetris::eraseGhost()
+void Tetris::erase_ghost()
 {
     std::vector<std::pair<int, int>> location = ghost.getLocation();
 
@@ -187,11 +207,11 @@ void Tetris::eraseGhost()
     for (int i = 0; i < maxMinos; i++)
     {
         if (game_field[location[i].first][location[i].second].mino == TetrominoKind::Ghost)
-            game_field[location[i].first][location[i].second] = { TetrominoKind::none, false };
+            set_field(location[i].first, location[i].second, { TetrominoKind::none, false });
     }
 }
 
-void Tetris::destroyLine()
+void Tetris::destroy_line()
 {
     /* from bottom to top */
     bool destroy = false;
@@ -200,7 +220,7 @@ void Tetris::destroyLine()
         // detect full row
         bool row_occupied = true;
         for (int j = 0; j < field_width && row_occupied; j++)
-            row_occupied &= game_field[i][j].occupied;
+            row_occupied &= is_occupied(i, j);
 
         if (row_occupied)
         {
@@ -209,14 +229,13 @@ void Tetris::destroyLine()
             entry.score += points_per_line;
 
             // destroy full row
-            for (int j = 0; j < field_width; j++)
-                game_field[i][j] = { TetrominoKind::none, false };
+            set_row(i, std::vector<Field>(field_width, { TetrominoKind::none, false }));
 
             // move down each row above by one
             for (int k = i + 1; k < field_height; k++)
             {
-                game_field[k - 1] = game_field[k];
-                game_field[k] = std::vector<Field>(field_width, { TetrominoKind::none, false });
+                set_row(k-1, game_field[k]);
+                set_row(k, std::vector<Field>(field_width, { TetrominoKind::none, false }));
             }
             i--; // row i is now a new row and needs to be checked again
         }
@@ -246,7 +265,7 @@ void Tetris::key_escape()
     {
         game_state = Tetris_State::playing;
         /* redraw scene as it was before the pause */
-        show.update_preview(nextTetromino.getKind());
+        show.update_preview(next_tetromino.getKind());
         show.draw_scene(game_field);
     }
     else
@@ -268,26 +287,26 @@ void Tetris::run()
         {
             end_time = std::chrono::high_resolution_clock::now();
             duration_ms = (end_time - start_time) / std::chrono::milliseconds(1);
-            if (duration_ms >= game_loop_sleep_time_ms || letFall)
+            if (duration_ms >= game_loop_sleep_time_ms || let_fall)
             {
                 start_time = end_time;
                 bool could_fall = false;
 
                 do {
                     could_fall = fall();        // every tetris_sleep_period_ms let the stone fall
-                    letFall &= could_fall;
-                } while (letFall);              // if space has been pressed, let the current Tetromino fall to the very bottom
+                    let_fall &= could_fall;
+                } while (let_fall);             // if space has been pressed, let the current Tetromino fall to the very bottom
 
-                letFall = false;
+                let_fall = false;
 
                 if(could_fall == false)         // if the very bottom has been reached
                 {
-                    std::lock_guard<std::mutex> lockGuard(m);
-                    destroyLine();
+                    destroy_line();
                     show.update_stats(entry);
-                    placeNextTetromino();
+                    place_next_tetromino();
                 }
             }
+            std::lock_guard<std::mutex> lockGuard(m);
             show.draw_scene(game_field);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(thread_sleep_time_in_ms));
@@ -308,11 +327,11 @@ void Tetris::start()
         do
         {
             show.draw_layout();
-            show.update_preview(nextTetromino.getKind());
+            show.update_preview(next_tetromino.getKind());
             show.update_stats(entry);
             show.draw_highscores(stats.get_high_scores());
 
-            placeNextTetromino();
+            place_next_tetromino();
             std::thread game_thread(std::bind(&Tetris::run, this));
             game_thread.join();
 
@@ -324,8 +343,8 @@ void Tetris::start()
             entry.level = 1; entry.lines = 0; entry.score = 0;
 
             bag_of_tetrominos.clear();
-            nextTetromino = bag_of_tetrominos.grab_from_bag();
-            ghost = currentTetromino = nextTetromino;
+            next_tetromino = bag_of_tetrominos.grab_from_bag();
+            ghost = current_tetromino = next_tetromino;
 
             show.draw_game_over();
 
@@ -340,5 +359,4 @@ void Tetris::start()
             keyboard_thread.join();
         }
     }
-
 }
