@@ -56,7 +56,7 @@ static inline void draw(HANDLE scr_buf, COORD coord, WORD color, const char *c_s
     WriteConsoleA(scr_buf, c_str, length, NULL, NULL);
 }
 
-void Tetris_Draw_Windows_Console::draw_scene(std::vector<std::vector<Field>> game_field)
+void Tetris_Draw_Windows_Console::draw_scene(const std::vector<std::vector<Field>> & game_field)
 {
     COORD con_coord = coord_game_field;
     for (int i = field_height - 1; i >= 0; i--)
